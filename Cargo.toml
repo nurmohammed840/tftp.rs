@@ -1,0 +1,8 @@
+[package]
+name = "tftp"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+bin-layout = "5.1"
+tokio = { version = "1.17.0", features = ["full"] }
