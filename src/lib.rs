@@ -3,12 +3,12 @@ use serde::Text;
 
 mod serde;
 mod utils;
-mod sender;
-mod server;
+pub mod sender;
+pub mod server;
 
 #[derive(Debug)]
 pub enum ErrorCode {
-    NotDefined,
+    NotDefined = 0,
     FileNotFound,
     AccessViolation,
     DiskFull,

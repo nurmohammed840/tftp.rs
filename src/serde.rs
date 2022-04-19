@@ -1,3 +1,5 @@
+use std::str;
+
 use crate::{ErrorCode::*, Frame, Request};
 use bin_layout::*;
 use Frame::*;
@@ -11,6 +13,12 @@ impl<T: Into<String>> From<T> for Text {
     }
 }
 
+impl std::ops::Deref for Text {
+    type Target = String;
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
 
 impl Encoder for Text {
     fn encoder(self, c: &mut impl Array<u8>) {
@@ -27,8 +35,9 @@ impl<E: Error> Decoder<'_, E> for Text {
             .position(|&b| b == 0)
             .ok_or_else(E::invalid_data)?;
 
-        let data = c.read_slice(len).unwrap().to_vec();
-        let text = String::from_utf8(data).map_err(E::from_utf8_err)?;
+        let data = c.read_slice(len).unwrap();
+        let text = str::from_utf8(data).map_err(E::utf8_err)?.to_owned();
+        c.offset += 1;
         Ok(Self(text))
     }
 }
