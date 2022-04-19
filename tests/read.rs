@@ -1,35 +1,44 @@
-// #![allow(deprecated)]
+use std::{io::Cursor, thread};
+
 // use bin_layout::{Decoder, Encoder};
-// use std::{io::Result, net::UdpSocket, thread};
-// use tftp::{Frame, Request};
+use tftp::{Config, Context, Method, Request, Server};
 
-// #[test]
-// fn test_name() {
-//     let server = thread::spawn(|| {
-//         let mut socket = UdpSocket::bind("127.0.0.1:1234").unwrap();
-//         tftp::server::accept(&mut socket).unwrap();
-//         thread::sleep_ms(1000);
-//     });
+#[test]
+fn teast() {
+    let s = thread::spawn(server);
+    let c = thread::spawn(client);
+    c.join().unwrap();
+    s.join().unwrap();
+}
 
-//     let client = thread::spawn(|| {
-//         thread::sleep_ms(100);
-//         let socket = UdpSocket::bind("0.0.0.0:0").unwrap();
+#[test]
+fn client() {
+    let mut dst = vec![];
 
-//         let req = Request {
-//             filename: "test.txt".into(),
-//             mode: "octet".into(),
-//         };
-//         socket
-//             .send_to(&Frame::Read(req).encode(), "127.0.0.1:1234")
-//             .unwrap();
+    Context {
+        req: Request::new("text.txt", "text"),
+        method: Method::Read,
+        addr: "127.0.0.1:1234".parse().unwrap(),
+    }
+    .recv_data(&mut dst, Config::default()).unwrap();
 
-//         loop {
-//             let mut data = [0; 1500];
-//             let (n, addr) = socket.recv_from(&mut data).unwrap();
-//             let frame: Result<_> = Frame::decode(&data[..n]);
-//             println!("Result ({addr}): {:?}", frame);
-//         }
-//     });
-//     client.join().unwrap();
-//     server.join().unwrap();
-// }
+    println!("{:?}", String::from_utf8(dst));
+}
+
+#[test]
+fn server() {
+    let mut server = Server::listen("127.0.0.1:1234");
+
+    println!("Listening on: {:?}", server.socket.local_addr());
+    let ctx = server.accept().unwrap();
+
+    println!("{:?}", ctx);
+
+    match ctx.method {
+        Method::Read => {
+            let mut data = Cursor::new("Hello, World!");
+            ctx.send_data(&mut data, Config::default()).unwrap();
+        }
+        Method::Write => {}
+    }
+}

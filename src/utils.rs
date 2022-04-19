@@ -10,26 +10,26 @@ macro_rules! check {
         }
     };
 }
-macro_rules! recv {
+macro_rules! recv_frame {
     [$socket: expr, $buf: expr, $($code:tt)*] => ({
         let n = $socket.recv($buf)?;
-        recv!(&mut $buf[..n], $($code)*)
+        recv_frame!(&mut $buf[..n], $($code)*)
     });
     ($buf:expr, $($code:tt)*) => (
         match (Frame::decode($buf) as Result<_>)? {
             $($code)*,
             #[allow(unreachable_patterns)]
-            _ => return Err(ErrorKind::InvalidData.into()),
+            frame => return Err(Error::new(ErrorKind::Other, format!("{frame:?}"))),
         }
     );
 }
 
 pub(crate) use check;
-pub(crate) use recv as recv_frame;
+pub(crate) use recv_frame;
 
 pub fn recv_ack(socket: &UdpSocket) -> Result<u16> {
-    let mut buf = [0; 4];
-    recv!(socket, buf.as_mut(), Frame::Acknowledge(ack) => Ok(ack))
+    let mut buf = [0; 48];
+    recv_frame!(socket, buf.as_mut(), Frame::Acknowledge(ack) => Ok(ack))
 }
 
 pub fn read_data(src: &mut impl Read, mut buf: &mut [u8]) -> Result<usize> {

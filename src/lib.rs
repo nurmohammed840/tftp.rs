@@ -1,11 +1,13 @@
-pub mod context;
+mod context;
 mod serde;
-pub mod server;
+mod server;
 mod utils;
 
 use bin_layout::{Decoder, Encoder};
+
 pub use context::*;
 pub use serde::Text;
+pub use server::*;
 
 use std::{
     io::*,
@@ -36,6 +38,15 @@ pub enum ErrorCode {
 pub struct Request {
     pub filename: Text,
     pub mode: Text,
+}
+
+impl Request {
+    pub fn new<I: Into<String>>(name: I, mode: I) -> Self {
+        Self {
+            filename: Text(name.into()),
+            mode: Text(mode.into()),
+        }
+    }
 }
 
 #[derive(Debug)]

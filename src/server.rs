@@ -8,7 +8,7 @@ use std::{
 
 pub struct Server {
     buf: [u8; 1024],
-    socket: UdpSocket,
+    pub socket: UdpSocket,
 }
 
 impl Server {
@@ -36,7 +36,7 @@ impl Server {
             recv_frame!(&self.buf[..amt],
                 Frame::Read(req) => break Context { addr, req, method: Method::Read },
                 Frame::Write(req) => break Context { addr, req, method: Method::Write },
-                _ => self.send_err(addr, AccessViolation, "Only read and write requests are supported.")?
+                _ => self.send_err(addr, AccessViolation, "Only RRQ and WRQ are supported.")?
             );
         })
     }

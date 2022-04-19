@@ -1,11 +1,13 @@
 use crate::*;
 use ErrorKind::*;
 
+#[derive(Debug)]
 pub enum Method {
     Read,
     Write,
 }
 
+#[derive(Debug)]
 pub struct Context {
     pub req: Request,
     pub method: Method,
@@ -41,7 +43,7 @@ impl Context {
             let mut attapmt = 0;
             loop {
                 match recv_ack(&socket) {
-                    Err(err)if matches!(err.kind(), WouldBlock | TimedOut) => {
+                    Err(err) if matches!(err.kind(), WouldBlock | TimedOut) => {
                         if attapmt == config.max_retransmit {
                             let err_msg = Frame::ErrMsg {
                                 code: AccessViolation,
@@ -88,6 +90,7 @@ impl Context {
         }
         loop {
             recv_frame!(&buf[..nbytes], Frame::Data { block, bytes } => {
+                socket.send(&Frame::Acknowledge(block).encode())?;
                 if block == curr_block {
                     dst.write_all(&bytes)?;
                     curr_block = curr_block.wrapping_add(1);
@@ -95,7 +98,6 @@ impl Context {
                         return Ok(());
                     }
                 }
-                socket.send(&Frame::Acknowledge(block).encode())?;
             });
             nbytes = socket.recv(&mut buf)?;
         }

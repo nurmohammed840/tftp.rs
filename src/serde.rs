@@ -1,18 +1,18 @@
 use crate::{ErrorCode::*, Frame, Request};
 use bin_layout::*;
-use std::str;
+use std::{str, fmt};
 use Frame::*;
 
 impl Encoder for Frame<'_> {
     fn encoder(self, c: &mut impl Array<u8>) {
-        match self {
+        let opcode: u16 = match self {
             Read(_) => 1,
             Write(_) => 2,
             Data { .. } => 3,
             Acknowledge { .. } => 4,
             ErrMsg { .. } => 5,
-        }
-        .encoder(c); // opcode
+        };
+        opcode.encoder(c);
 
         match self {
             Read(req) | Write(req) => req.encoder(c),
@@ -30,10 +30,14 @@ impl Encoder for Frame<'_> {
 }
 impl<'a, E: Error> Decoder<'a, E> for Frame<'a> {
     fn decoder(c: &mut Cursor<&'a [u8]>) -> Result<Self, E> {
-        Ok(match u16::decoder(c)? {
+        let opcode = u16::decoder(c)?;
+        Ok(match opcode {
             1 => Read(Request::decoder(c)?),
             2 => Write(Request::decoder(c)?),
-            3 => Data { block: u16::decoder(c)?, bytes: c.remaining_slice() },
+            3 => Data {
+                block: u16::decoder(c)?,
+                bytes: c.remaining_slice(),
+            },
             4 => Acknowledge(u16::decoder(c)?),
             5 => ErrMsg {
                 code: match u16::decoder(c)? {
@@ -55,7 +59,7 @@ impl<'a, E: Error> Decoder<'a, E> for Frame<'a> {
 }
 //=======================================================================================
 
-#[derive(Debug, Clone)]
+#[derive(Clone)]
 pub struct Text(pub String);
 
 impl Encoder for Text {
@@ -88,5 +92,10 @@ impl std::ops::Deref for Text {
     type Target = String;
     fn deref(&self) -> &Self::Target {
         &self.0
+    }
+}
+impl fmt::Debug for Text {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.0)
     }
 }
