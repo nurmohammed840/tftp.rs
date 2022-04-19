@@ -1,14 +1,25 @@
-use bin_layout::{Decoder, Encoder};
-use serde::Text;
-
+pub mod context;
 mod serde;
-mod utils;
-pub mod sender;
 pub mod server;
+mod utils;
+
+use bin_layout::{Decoder, Encoder};
+pub use context::*;
+pub use serde::Text;
+
+use std::{
+    io::*,
+    net::{SocketAddr, UdpSocket},
+    time::Duration,
+};
+pub(crate) use utils::*;
+pub(crate) use ErrorCode::*;
+
+//-------------------------------------------------------------------------------------
 
 #[derive(Debug)]
 pub enum ErrorCode {
-    NotDefined = 0,
+    NotDefined = 1,
     FileNotFound,
     AccessViolation,
     DiskFull,
@@ -18,11 +29,10 @@ pub enum ErrorCode {
     NoSuchUser,
 }
 
-/// The file name is a sequence of bytes in netascii terminated by a zero byte.
+/// The file name is a sequence of bytes terminated by a zero byte.
 ///
-/// The mode field contains the string "netascii", "octet", or "mail" (case insensative) in netascii
-/// indicating the three modes defined in the protocol.
-#[derive(Debug, Encoder, Decoder)]
+/// The mode field contains the string "netascii", "octet", or "mail" (case insensative).
+#[derive(Debug, Clone, Encoder, Decoder)]
 pub struct Request {
     pub filename: Text,
     pub mode: Text,
@@ -38,7 +48,7 @@ pub enum Frame<'a> {
         bytes: &'a [u8],
     },
     /// ACK's  used for termination are acknowledged unless a timeout occurs
-    Acknowledgment(u16),
+    Acknowledge(u16),
     /// If a request can not be granted, or some error occurs during the transfer, then an ERROR packet (opcode 5) is sent.
     /// Timeouts must also be used to detect errors
     ErrMsg {

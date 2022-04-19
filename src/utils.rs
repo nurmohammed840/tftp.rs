@@ -1,8 +1,15 @@
-use crate::Frame;
-use bin_layout::Decoder;
-use std::io::{ErrorKind, Read, Result};
-use std::net::UdpSocket;
+use crate::*;
 
+macro_rules! check {
+    ($cond:expr $(,)?) => {
+        if !$cond {
+            return Err(Error::new(
+                ErrorKind::Other,
+                format!("chack failed: {:?}", stringify!($cond)),
+            ));
+        }
+    };
+}
 macro_rules! recv {
     [$socket: expr, $buf: expr, $($code:tt)*] => ({
         let n = $socket.recv($buf)?;
@@ -16,12 +23,14 @@ macro_rules! recv {
         }
     );
 }
+
+pub(crate) use check;
 pub(crate) use recv as recv_frame;
+
 pub fn recv_ack(socket: &UdpSocket) -> Result<u16> {
     let mut buf = [0; 4];
-    recv!(socket, buf.as_mut(), Frame::Acknowledgment(ack) => Ok(ack))
+    recv!(socket, buf.as_mut(), Frame::Acknowledge(ack) => Ok(ack))
 }
-
 
 pub fn read_data(src: &mut impl Read, mut buf: &mut [u8]) -> Result<usize> {
     let mut read = 0;

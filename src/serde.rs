@@ -1,60 +1,18 @@
-use std::str;
-
 use crate::{ErrorCode::*, Frame, Request};
 use bin_layout::*;
+use std::str;
 use Frame::*;
-
-#[derive(Debug)]
-pub struct Text(pub String);
-
-impl<T: Into<String>> From<T> for Text {
-    fn from(data: T) -> Self {
-        Text(data.into())
-    }
-}
-
-impl std::ops::Deref for Text {
-    type Target = String;
-    fn deref(&self) -> &Self::Target {
-        &self.0
-    }
-}
-
-impl Encoder for Text {
-    fn encoder(self, c: &mut impl Array<u8>) {
-        c.extend_from_slice(self.0);
-        c.push(0);
-    }
-}
-
-impl<E: Error> Decoder<'_, E> for Text {
-    fn decoder(c: &mut Cursor<&[u8]>) -> Result<Self, E> {
-        let len = c
-            .remaining_slice()
-            .iter()
-            .position(|&b| b == 0)
-            .ok_or_else(E::invalid_data)?;
-
-        let data = c.read_slice(len).unwrap();
-        let text = str::from_utf8(data).map_err(E::utf8_err)?.to_owned();
-        c.offset += 1;
-        Ok(Self(text))
-    }
-}
-
-// ------------------------------------------------------------------------------------------
 
 impl Encoder for Frame<'_> {
     fn encoder(self, c: &mut impl Array<u8>) {
-        let opcode: u16 = match self {
+        match self {
             Read(_) => 1,
             Write(_) => 2,
             Data { .. } => 3,
-            Acknowledgment { .. } => 4,
+            Acknowledge { .. } => 4,
             ErrMsg { .. } => 5,
-        };
-
-        opcode.encoder(c);
+        }
+        .encoder(c); // opcode
 
         match self {
             Read(req) | Write(req) => req.encoder(c),
@@ -62,7 +20,7 @@ impl Encoder for Frame<'_> {
                 block.encoder(c);
                 c.extend_from_slice(bytes);
             }
-            Acknowledgment(block) => block.encoder(c),
+            Acknowledge(num) => num.encoder(c),
             ErrMsg { code, msg } => {
                 (code as u16).encoder(c);
                 msg.encoder(c);
@@ -70,17 +28,13 @@ impl Encoder for Frame<'_> {
         }
     }
 }
-
 impl<'a, E: Error> Decoder<'a, E> for Frame<'a> {
     fn decoder(c: &mut Cursor<&'a [u8]>) -> Result<Self, E> {
-        let opcode = u16::decoder(c)?;
-        let frame = match opcode {
-            1 | 2 => Read(Request::decoder(c)?),
-            3 => Data {
-                block: u16::decoder(c)?,
-                bytes: c.remaining_slice(),
-            },
-            4 => Acknowledgment(u16::decoder(c)?),
+        Ok(match u16::decoder(c)? {
+            1 => Read(Request::decoder(c)?),
+            2 => Write(Request::decoder(c)?),
+            3 => Data { block: u16::decoder(c)?, bytes: c.remaining_slice() },
+            4 => Acknowledge(u16::decoder(c)?),
             5 => ErrMsg {
                 code: match u16::decoder(c)? {
                     1 => NotDefined,
@@ -96,7 +50,43 @@ impl<'a, E: Error> Decoder<'a, E> for Frame<'a> {
                 msg: Text::decoder(c)?,
             },
             _ => return Err(E::invalid_data()),
-        };
-        Ok(frame)
+        })
+    }
+}
+//=======================================================================================
+
+#[derive(Debug, Clone)]
+pub struct Text(pub String);
+
+impl Encoder for Text {
+    fn encoder(self, c: &mut impl Array<u8>) {
+        c.extend_from_slice(self.0);
+        c.push(0);
+    }
+}
+impl<E: Error> Decoder<'_, E> for Text {
+    fn decoder(c: &mut Cursor<&[u8]>) -> Result<Self, E> {
+        let len = c
+            .remaining_slice()
+            .iter()
+            .position(|&b| b == 0)
+            .ok_or_else(E::invalid_data)?;
+
+        let data = c.read_slice(len).unwrap();
+        let text = str::from_utf8(data).map_err(E::utf8_err)?.to_owned();
+        c.offset += 1;
+        Ok(Self(text))
+    }
+}
+
+impl<T: Into<String>> From<T> for Text {
+    fn from(data: T) -> Self {
+        Text(data.into())
+    }
+}
+impl std::ops::Deref for Text {
+    type Target = String;
+    fn deref(&self) -> &Self::Target {
+        &self.0
     }
 }
