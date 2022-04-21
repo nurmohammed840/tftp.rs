@@ -1,4 +1,4 @@
-[Trivial File Transfer Protocol](https://en.wikipedia.org/wiki/Trivial_File_Transfer_Protocol) is a very simple lockstep File Transfer Protocol to study about network for beginners. 
+[Trivial File Transfer Protocol](https://en.wikipedia.org/wiki/Trivial_File_Transfer_Protocol) is a very simple lockstep File Transfer Protocol to study about network programing. 
 
 TFTP is designed to be small and easy to implement.
 
