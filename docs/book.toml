@@ -4,3 +4,10 @@ language = "en"
 multilingual = false
 src = "src"
 title = "Trivial File Transfer Protocol"
+
+[output.html]
+default-theme = "ayu"
+git-repository-icon = "fa-github"
+git-repository-url = "https://github.com/rust-lang/mdBook"
+additional-js = ["src/assets/index.js"]
+additional-css = ["src/assets/index.css"]

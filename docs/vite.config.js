@@ -1,5 +1,6 @@
 import { defineConfig } from "vite"
 import react from "@vitejs/plugin-react"
+
 import { remarkCodeHike } from "@code-hike/mdx"
 import theme from "shiki/themes/github-dark.json"
 

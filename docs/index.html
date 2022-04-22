@@ -1,0 +1,16 @@
+<div id="frame"></div>
+
+<script type="module">
+  import "@code-hike/mdx/dist/index.css";
+  import React from 'react'
+  import ReactDOM from 'react-dom'
+
+  import frame from '/src/code/frame.mdx'
+
+  function render(c, id) {
+    ReactDOM.render(React.createElement(c), document.getElementById(id))
+  }
+
+  render(frame, 'frame')
+
+</script>
