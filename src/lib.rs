@@ -34,10 +34,11 @@ pub enum ErrorCode {
 /// The file name is a sequence of bytes terminated by a zero byte.
 ///
 /// The mode field contains the string "netascii", "octet", or "mail" (case insensative).
-#[derive(Debug, Clone, Encoder, Decoder)]
+#[derive(Debug, Clone)]
 pub struct Request {
     pub filename: Text,
     pub mode: Text,
+    pub options: Vec<(Text, Text)>,
 }
 
 impl Request {
@@ -45,6 +46,7 @@ impl Request {
         Self {
             filename: Text(name.into()),
             mode: Text(mode.into()),
+            options: vec![],
         }
     }
 }

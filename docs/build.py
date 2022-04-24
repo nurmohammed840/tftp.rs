@@ -13,12 +13,44 @@ def index_files(path):
         if filename.startswith('index'):
             yield filename
 
-def move_and_replace_file(src, dist):
+def move_or_replace_file(src, dist):
     if os.path.exists(dist):
         os.remove(dist)
 
     os.rename(src, dist)
 
+# --------------------------------------------------------------------------
+
+ids = []
+
+for filename in os.listdir("./src/code"):
+    name, ext = filename.split('.', 1)
+    if ext == 'mdx':
+        ids.append(name)
+
+code = """<!-- Auto-generated file by build.py, Do not edit. -->
+{}
+
+<script type="module">
+import "@code-hike/mdx/dist/index.css";
+import React from 'react';
+import ReactDOM from 'react-dom';
+{}
+
+window.code ??= {};
+{}
+</script>
+""".format(
+    '\n'.join(list(map(lambda x: '<div id="{}"></div>'.format(x), ids))),
+    '\n'.join(list(map(lambda x: "import {x} from '/src/code/{x}.mdx';".format(x = x), ids))),
+    "{}",
+    '\n'.join(list(map(lambda x: 'window.code.{x} = ele => ReactDOM.render(React.createElement({x}), ele);'.format(x = x), ids))),
+)
+
+with open('./index.html', 'w') as file:
+    file.write(code)
+    
+# ---------------------------------------------------------------------------
 
 for filename in index_files('./dist/assets'):
     if filename.endswith('.js') or filename.endswith('.css'):
@@ -31,11 +63,11 @@ execute_cmd('yarn build')
 
 
 for filename in index_files('./dist/assets'):
-    extension = os.path.splitext(filename)[1]
+    ext = os.path.splitext(filename)[1]
     src = './dist/assets/' + filename
-    dist = './src/assets/index' + extension
+    dist = './src/assets/index' + ext
     
-    move_and_replace_file(src, dist)
+    move_or_replace_file(src, dist)
     print('Moved: ' + src + ' -> ' + dist)
 
 

@@ -1,6 +1,6 @@
 use crate::{ErrorCode::*, Frame, Request};
 use bin_layout::*;
-use std::{str, fmt};
+use std::{fmt, str};
 use Frame::*;
 
 impl Encoder for Frame<'_> {
@@ -28,6 +28,7 @@ impl Encoder for Frame<'_> {
         }
     }
 }
+
 impl<'a, E: Error> Decoder<'a, E> for Frame<'a> {
     fn decoder(c: &mut Cursor<&'a [u8]>) -> Result<Self, E> {
         let opcode = u16::decoder(c)?;
@@ -41,14 +42,14 @@ impl<'a, E: Error> Decoder<'a, E> for Frame<'a> {
             4 => Acknowledge(u16::decoder(c)?),
             5 => ErrMsg {
                 code: match u16::decoder(c)? {
-                    1 => NotDefined,
-                    2 => FileNotFound,
-                    3 => AccessViolation,
-                    4 => DiskFull,
-                    5 => IllegalOperation,
-                    6 => UnknownTransferID,
-                    7 => FileAlreadyExists,
-                    8 => NoSuchUser,
+                    0 => NotDefined,
+                    1 => FileNotFound,
+                    2 => AccessViolation,
+                    3 => DiskFull,
+                    4 => IllegalOperation,
+                    5 => UnknownTransferID,
+                    6 => FileAlreadyExists,
+                    7 => NoSuchUser,
                     _ => return Err(E::invalid_data()),
                 },
                 msg: Text::decoder(c)?,
@@ -57,7 +58,36 @@ impl<'a, E: Error> Decoder<'a, E> for Frame<'a> {
         })
     }
 }
-//=======================================================================================
+//========================================================================
+
+impl Encoder for Request {
+    fn encoder(self, c: &mut impl Array<u8>) {
+        self.filename.encoder(c);
+        self.mode.encoder(c);
+        for (key, value) in self.options {
+            key.encoder(c);
+            value.encoder(c);
+        }
+    }
+}
+
+impl<E: Error> Decoder<'_, E> for Request {
+    fn decoder(c: &mut Cursor<&[u8]>) -> Result<Self, E> {
+        Ok(Self {
+            filename: Text::decoder(c)?,
+            mode: Text::decoder(c)?,
+            options: {
+                let mut options = Vec::with_capacity(3);
+                while c.remaining_slice().len() > 0 {
+                    options.push((Text::decoder(c)?, Text::decoder(c)?));
+                }
+                options
+            },
+        })
+    }
+}
+
+//========================================================================
 
 #[derive(Clone)]
 pub struct Text(pub String);
@@ -68,6 +98,7 @@ impl Encoder for Text {
         c.push(0);
     }
 }
+
 impl<E: Error> Decoder<'_, E> for Text {
     fn decoder(c: &mut Cursor<&[u8]>) -> Result<Self, E> {
         let len = c
