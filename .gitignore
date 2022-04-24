@@ -1,7 +1,2 @@
 /target
 Cargo.lock
-
-/my-deck
-
-node_modules
-book
