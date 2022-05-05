@@ -1,2 +1,9 @@
 /target
 Cargo.lock
+
+docs/book
+docs/dist
+docs/node_modules
+
+docs/yarn.lock
+docs/index.html

@@ -1,9 +1,0 @@
-book
-dist
-target
-node_modules
-
-Cargo.lock
-yarn.lock
-
-/index.html
