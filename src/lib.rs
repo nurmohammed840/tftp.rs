@@ -2,7 +2,6 @@ mod context;
 mod serde;
 mod server;
 mod utils;
-mod app;
 
 use bin_layout::{Decoder, Encoder};
 
