@@ -1,6 +1,6 @@
 use crate::{ErrorCode::*, Frame, Request};
 use bin_layout::*;
-use std::{fmt, str};
+use std::fmt;
 use Frame::*;
 
 impl Encoder for Frame<'_> {
@@ -101,16 +101,13 @@ impl Encoder for Text {
 
 impl<E: Error> Decoder<'_, E> for Text {
     fn decoder(c: &mut Cursor<&[u8]>) -> Result<Self, E> {
-        let len = c
-            .remaining_slice()
-            .iter()
-            .position(|&b| b == 0)
-            .ok_or_else(E::invalid_data)?;
+        let bytes: Vec<u8> = c
+            .remaining_slice().iter()
+            .take_while(|&b| *b != 0).copied()
+            .collect();
 
-        let data = c.read_slice(len).unwrap();
-        let text = str::from_utf8(data).map_err(E::utf8_err)?.to_owned();
-        c.offset += 1;
-        Ok(Self(text))
+        c.offset += bytes.len() + 1;
+        Ok(String::from_utf8(bytes).map_err(E::from_utf8_err)?.into())
     }
 }
 
@@ -129,4 +126,12 @@ impl fmt::Debug for Text {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}", self.0)
     }
+}
+
+#[test]
+fn test_name() {
+    let f = [1u8, 2, 3, 5, 0];
+    let data: Vec<u8> = f.iter().take_while(|&b| *b != 0).copied().collect();
+
+    println!("{data:?}");
 }
