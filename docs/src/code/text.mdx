@@ -1,0 +1,164 @@
+<CH.Slideshow>
+
+```rust
+use bin_layout::*;
+use ErrorCode::*;
+```
+
+Asterisk `*` imports everything from the `bin_layout` crate and the `ErrorCode` enum.
+
+
+---
+
+```rust focus=4,6,10
+use bin_layout::*;
+use ErrorCode::*;
+
+struct Text(String);
+
+impl Encoder for Text {
+    fn encoder(self, arr: &mut impl Array<u8>) {
+        todo!()
+    }
+}
+```
+
+Let's implement the `Encoder` trait for the `Text` type. So it knows how to encode itself into an array of bytes.
+
+A trait is some functions signature of some abstract type, In other languages it is also known as [interface](https://en.wikipedia.org/wiki/Interface_(computing)#In_object-oriented_languages)
+
+---
+
+
+```rust focus=7,9
+use bin_layout::*;
+use ErrorCode::*;
+
+struct Text(String);
+
+impl Encoder for Text {
+    fn encoder(self, arr: &mut impl Array<u8>) {
+        todo!()
+    }
+}
+```
+
+Only required method is `encoder`,  Python 🐍 programmer can tell, it's a method 
+because it takes `self`.
+
+`&mut` is a mutable reference, which mean Rust type system
+guarantees that No one can modify it while we are modifying it.
+Which eliminate whole class of 🐛 bugs!🪲 and data race.🏃‍♂️
+
+`impl Array<u8>` is a generic type, Any abstract type that implement `Array<u8>` trait (like array of bytes: `Vec<u8>`) can call this function.
+
+---
+
+```rust focus=8,9
+use bin_layout::*;
+use ErrorCode::*;
+
+struct Text(String);
+
+impl Encoder for Text {
+    fn encoder(self, arr: &mut impl Array<u8>) {
+        arr.extend_from_slice(self.0);
+        arr.push(0);
+    }
+}
+```
+
+`extend_from_slice` copy the content of `self.0` (`String`) to `arr`.
+Let's push a trailing `0` to indicate end of string.
+
+---
+
+```rust focus=6:7,9:10
+        arr.extend_from_slice(self.0);
+        arr.push(0);
+    }
+}
+
+impl<E: Error> Decoder<'_, E> for Text {
+    fn decoder(c: &mut Cursor<&[u8]>) -> Result<Self, E> {
+        todo!()
+    }
+}
+```
+
+Now let's implement the `Decoder` trait.
+`decoder` function takes a `Cursor<&[u8]>` and return `Result<Self, E>`.
+
+[Result](https://doc.rust-lang.org/std/result/enum.Result.html) is an build-in enum that can be either `Ok(T)` or `Err(E)`.
+Error can be any type that implements `bin_layout::Error` trait.
+
+---
+
+```rust focus=3:5
+impl<E: Error> Decoder<'_, E> for Text {
+    fn decoder(c: &mut Cursor<&[u8]>) -> Result<Self, E> {
+        let len = c
+            .remaining_slice().iter()
+            .position(|&b| b == 0)
+    }
+}
+```
+
+First, We need to find the length of the string.
+We can do that by iterating over the remaining bytes and finding the first `0` byte (It indcate end of string).
+
+[position()](https://doc.rust-lang.org/std/iter/trait.Iterator.html#method.position)
+returns the index of the first element that matches the predicate.
+
+---
+
+```rust focus=6,8
+impl<E: Error> Decoder<'_, E> for Text {
+    fn decoder(c: &mut Cursor<&[u8]>) -> Result<Self, E> {
+        let len = c
+            .remaining_slice().iter()
+            .position(|&b| b == 0)
+            .ok_or_else(E::invalid_data)?;
+
+        let bytes = c.read_slice(len).unwrap();
+    }
+}
+```
+
+If there is no `0` byte, we will return `E::invalid_data` error. 
+
+In Rust, there is no `try/catch` block. Instead, We use `Result` enum and perform pattern matching to handle errors. 
+
+Question mark `?` operator is a shortcut for
+
+```rust
+let value = match err { 
+    Ok(val) => val,
+    Err(err) => return Err(err),
+}
+```
+
+`unwrap()` method is similar, instead of returning error, It just panic.
+
+---
+
+```rust focus=9:11
+impl<E: Error> Decoder<'_, E> for Text {
+    fn decoder(c: &mut Cursor<&[u8]>) -> Result<Self, E> {
+        let len = c
+            .remaining_slice().iter()
+            .position(|&b| b == 0)
+            .ok_or_else(E::invalid_data)?;
+
+        let bytes = c.read_slice(len).unwrap();
+        let string = str::from_utf8(bytes).map_err(E::utf8_err)?.to_owned();
+        c.offset += 1;
+        Ok(Text(string))
+    }
+}
+```
+
+And finally, We also check for valid UTF-8. And increment the cursor offset by 1 to include the trailing `0` byte.
+last expression without `;` is returned.
+
+</CH.Slideshow>
