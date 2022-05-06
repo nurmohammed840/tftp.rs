@@ -76,5 +76,6 @@ for filename in index_files('./dist/assets'):
 
 
 if len(sys.argv) > 1 and sys.argv[1] == 'book':
+    execute_cmd('mdbook clean')
     execute_cmd('mdbook build')
 
