@@ -33,8 +33,6 @@ for filename in os.listdir("./src/code"):
         ids.append(name)
 
 code = """<!-- Auto-generated file by build.py, Do not edit. -->
-{}
-
 <script type="module">
 import "@code-hike/mdx/dist/index.css";
 import React from 'react';
@@ -45,7 +43,6 @@ window.code ??= {};
 {}
 </script>
 """.format(
-    '\n'.join(list(map(lambda x: '<div id="{}"></div>'.format(x), ids))),
     '\n'.join(list(map(lambda x: "import {x} from '/src/code/{x}.mdx';".format(x = x), ids))),
     "{}",
     '\n'.join(list(map(lambda x: 'window.code.{x} = ele => ReactDOM.render(React.createElement({x}), ele);'.format(x = x), ids))),

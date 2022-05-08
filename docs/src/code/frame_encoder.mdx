@@ -1,0 +1,30 @@
+```rust
+use Frame::*;
+
+impl Encoder for Frame<'_> {
+    fn encoder(self, c: &mut impl Array<u8>) {
+        let opcode: u16 = match self {
+            Read(..) => 1,
+            Write(..) => 2,
+            Data { .. } => 3,
+            Acknowledge { .. } => 4,
+            ErrMsg { .. } => 5,
+        };
+        
+        opcode.encoder(c);
+
+        match self {
+            Read(req) | Write(req) => req.encoder(c),
+            Data { block, bytes } => {
+                block.encoder(c);
+                c.extend_from_slice(bytes);
+            }
+            Acknowledge(num) => num.encoder(c),
+            ErrMsg { code, msg } => {
+                (code as u16).encoder(c);
+                msg.encoder(c);
+            }
+        }
+    }
+}
+```
