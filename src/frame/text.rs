@@ -4,6 +4,12 @@ use std::fmt;
 #[derive(Clone, PartialEq, Eq)]
 pub struct Text(pub String);
 
+impl Text {
+    pub fn into_string(self) -> String {
+        self.0
+    }
+}
+
 impl Encoder for Text {
     fn encoder(self, c: &mut impl Array<u8>) {
         c.extend_from_slice(self.0);

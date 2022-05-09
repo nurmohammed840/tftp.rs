@@ -16,3 +16,14 @@ impl Request {
         }
     }
 }
+
+#[test]
+fn request_parser() {
+    let req = Request::new("name", "mode");
+    let encoded = req.clone().encode();
+    let mut cursor = Cursor::new(encoded.as_ref());
+    let decoded: Result<_, ()> = Request::decoder(&mut cursor);
+
+    assert!(cursor.remaining_slice().is_empty());
+    assert_eq!(decoded.unwrap(), req);
+}

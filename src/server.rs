@@ -1,42 +1,33 @@
 use crate::*;
-use bin_layout::{Decoder, Encoder};
-use std::net::SocketAddr;
+use macros::recv_frame;
 use std::{
-    io::{ErrorKind, Result},
-    net::{ToSocketAddrs, UdpSocket},
+    io::{Error, ErrorKind, Result},
+    net::*,
 };
 
 pub struct Server {
-    buf: [u8; 1024],
+    buf: [u8; 512],
     pub socket: UdpSocket,
 }
 
 impl Server {
     pub fn listen(addr: impl ToSocketAddrs) -> Self {
         Self {
-            buf: [0; 1024],
-            socket: UdpSocket::bind(addr).unwrap(),
+            buf: [0; 512],
+            socket: UdpSocket::bind(addr).expect("Failed to bind socket"),
         }
-    }
-
-    pub fn send_err<T>(&self, addr: SocketAddr, code: ErrorCode, msg: T) -> Result<usize>
-    where
-        T: Into<String>,
-    {
-        let frame = Frame::ErrMsg {
-            code,
-            msg: Text(msg.into()),
-        };
-        self.socket.send_to(&frame.encode(), addr)
     }
 
     pub fn accept(&mut self) -> Result<Context> {
         Ok(loop {
-            let (amt, addr) = self.socket.recv_from(&mut self.buf)?;
-            recv_frame!(&self.buf[..amt],
+            let (nbytes, addr) = self.socket.recv_from(&mut self.buf)?;
+            recv_frame!(&self.buf[..nbytes],
                 Frame::Read(req) => break Context { addr, req, method: Method::Read },
                 Frame::Write(req) => break Context { addr, req, method: Method::Write },
-                _ => self.send_err(addr, AccessViolation, "Only RRQ and WRQ are supported.")?
+                _ => {
+                    let error = Frame::error(ErrorCode::AccessViolation, "Only RRQ and WRQ are supported.");
+                    self.socket.send_to(&error.encode(), addr)?;
+                }
             );
         })
     }

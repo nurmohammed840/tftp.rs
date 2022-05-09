@@ -3,7 +3,7 @@ mod options;
 mod request;
 mod text;
 
-pub(crate) use bin_layout::*;
+pub(super) use bin_layout::*;
 use Frame::*;
 
 pub use error_code::ErrorCode;
@@ -28,9 +28,17 @@ pub enum Frame<'a> {
         code: ErrorCode,
         msg: Text,
     },
-    // OACK()
+    OptAck(Options)
 }
 
+impl<'a> Frame<'a> {
+    pub fn error(code: ErrorCode, msg: impl Into<String>) -> Self {
+        ErrMsg {
+            code,
+            msg: Text(msg.into()),
+        }
+    }
+}
 
 impl Encoder for Frame<'_> {
     fn encoder(self, c: &mut impl Array<u8>) {
@@ -40,8 +48,9 @@ impl Encoder for Frame<'_> {
             Data { .. } => 3,
             Acknowledge { .. } => 4,
             ErrMsg { .. } => 5,
+            OptAck(..) => 6,
         };
-        
+
         opcode.encoder(c);
 
         match self {
@@ -55,6 +64,7 @@ impl Encoder for Frame<'_> {
                 (code as u16).encoder(c);
                 msg.encoder(c);
             }
+            OptAck(opts) => opts.encoder(c),
         }
     }
 }
@@ -74,6 +84,7 @@ impl<'a, E: Error> Decoder<'a, E> for Frame<'a> {
                 code: ErrorCode::decoder(c)?,
                 msg: Text::decoder(c)?,
             },
+            6 => OptAck(Options::decoder(c)?),
             _ => return Err(E::invalid_data()),
         })
     }
