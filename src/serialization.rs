@@ -1,42 +1,25 @@
-mod error_code;
-mod options;
-mod request;
-mod text;
+use crate::*;
+use bin_layout::*;
 
-pub(super) use bin_layout::*;
-use Frame::*;
-
-pub use error_code::ErrorCode;
-pub use options::Options;
-pub use request::Request;
-pub use text::Text;
-
-#[derive(Debug, PartialEq, Eq, Clone)]
-pub enum Frame<'a> {
-    Read(Request),
-    Write(Request),
-    /// The block numbers on data packets begin with one and increase by one for each new block of data.
-    Data {
-        block: u16,
-        bytes: &'a [u8],
-    },
-    /// ACK's  used for termination are acknowledged unless a timeout occurs
-    Acknowledge(u16),
-    /// If a request can not be granted, or some error occurs during the transfer, then an ERROR packet (opcode 5) is sent.
-    /// Timeouts must also be used to detect errors
-    ErrMsg {
-        code: ErrorCode,
-        msg: Text,
-    },
-    OptAck(Options)
+impl Encoder for Text {
+    fn encoder(self, arr: &mut impl Array<u8>) {
+        arr.extend_from_slice(self.0);
+        arr.push(0);
+    }
 }
 
-impl<'a> Frame<'a> {
-    pub fn error(code: ErrorCode, msg: impl Into<String>) -> Self {
-        ErrMsg {
-            code,
-            msg: Text(msg.into()),
-        }
+impl<E: Error> Decoder<'_, E> for Text {
+    fn decoder(c: &mut Cursor<&[u8]>) -> Result<Self, E> {
+        let bytes: Vec<u8> = c
+            .remaining_slice()
+            .iter()
+            .take_while(|&b| *b != 0)
+            .copied()
+            .collect();
+
+        c.offset += bytes.len() + 1;
+        let string = String::from_utf8(bytes).map_err(E::from_utf8_err)?;
+        Ok(Text(string))
     }
 }
 
@@ -48,7 +31,6 @@ impl Encoder for Frame<'_> {
             Data { .. } => 3,
             Acknowledge { .. } => 4,
             ErrMsg { .. } => 5,
-            OptAck(..) => 6,
         };
 
         opcode.encoder(c);
@@ -64,7 +46,6 @@ impl Encoder for Frame<'_> {
                 (code as u16).encoder(c);
                 msg.encoder(c);
             }
-            OptAck(opts) => opts.encoder(c),
         }
     }
 }
@@ -81,10 +62,18 @@ impl<'a, E: Error> Decoder<'a, E> for Frame<'a> {
             },
             4 => Acknowledge(u16::decoder(c)?),
             5 => ErrMsg {
-                code: ErrorCode::decoder(c)?,
+                code: match u16::decoder(c)? {
+                    1 => FileNotFound,
+                    2 => AccessViolation,
+                    3 => DiskFull,
+                    4 => IllegalOperation,
+                    5 => UnknownTransferID,
+                    6 => FileAlreadyExists,
+                    7 => NoSuchUser,
+                    _ => NotDefined,
+                },
                 msg: Text::decoder(c)?,
             },
-            6 => OptAck(Options::decoder(c)?),
             _ => return Err(E::invalid_data()),
         })
     }
