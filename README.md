@@ -2,6 +2,5 @@
 
 TFTP is designed to be small and easy to implement.
 
-
 ### links
 - https://datatracker.ietf.org/doc/html/rfc2348

@@ -2,16 +2,14 @@
 
 ```rust
 use bin_layout::*;
-use ErrorCode::*;
 ```
 
 Asterisk `*` imports everything from the `bin_layout` crate and the `ErrorCode` enum.
 
 ---
 
-```rust focus=4,6,10
+```rust focus=3,5,9
 use bin_layout::*;
-use ErrorCode::*;
 
 struct Text(String);
 
@@ -26,9 +24,8 @@ A trait is some functions signature of some abstract type, In other languages it
 
 ---
 
-```rust focus=7,9
+```rust focus=6,8
 use bin_layout::*;
-use ErrorCode::*;
 
 struct Text(String);
 
@@ -49,9 +46,8 @@ Which eliminate whole class of 🐛 bugs!🪲 and data race.🏃‍♂️
 
 ---
 
-```rust focus=8,9
+```rust focus=7,8
 use bin_layout::*;
-use ErrorCode::*;
 
 struct Text(String);
 
@@ -152,72 +148,5 @@ impl<E: Error> Decoder<'_, E> for Text {
 ```
 
 last expression without `;` is returned from function.
-
----
-
-```rust focus=5:14
-        Ok(Text(string))
-    }
-}
-
-impl Encoder for Request {
-    fn encoder(self, c: &mut impl Array<u8>) {
-        self.filename.encoder(c);
-        self.mode.encoder(c);
-        for (key, value) in self.options {
-            key.encoder(c);
-            value.encoder(c);
-        }
-    }
-}
-```
-
-We can encode `Text` field by calling `encoder` method.
-
----
-
-```rust focus=7:17
-            key.encoder(c);
-            value.encoder(c);
-        }
-    }
-}
-
-impl<E: Error> Decoder<'_, E> for Request {
-    fn decoder(c: &mut Cursor<&[u8]>) -> Result<Self, E> {
-        Ok(Self {
-            filename: Text::decoder(c)?,
-            mode: Text::decoder(c)?,
-            options: {
-                todo!()
-            }
-        })
-    }
-}
-```
-
-`Text::decoder` is called to decode `filename` and `mode` fields.
-
----
-
-```rust focus=7:11
-impl<E: Error> Decoder<'_, E> for Request {
-    fn decoder(c: &mut Cursor<&[u8]>) -> Result<Self, E> {
-        Ok(Self {
-            filename: Text::decoder(c)?,
-            mode: Text::decoder(c)?,
-            options: {
-                let mut options = Vec::new();
-                while !c.remaining_slice().is_empty() {
-                    options.push((Text::decoder(c)?, Text::decoder(c)?));
-                }
-                options
-            }
-        })
-    }
-}
-```
-
-While there are remaining bytes, we can decode `key` and `value` fields from cursor.
 
 </CH.Slideshow>

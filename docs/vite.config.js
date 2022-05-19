@@ -5,8 +5,17 @@ import { remarkCodeHike } from "@code-hike/mdx"
 import theme from "shiki/themes/github-dark.json"
 
 export default defineConfig(async () => {
-  const mdx = await import("@mdx-js/rollup")
+  const mdx = await import("@mdx-js/rollup");
   return {
+    build: {
+      lib: {
+        entry: 'src/code/main.js',
+        name: 'code',
+        fileName: _ => `code.js`,
+        formats: ['es']
+      },
+      outDir: "./src/assets",
+    },
     plugins: [
       react(),
       mdx.default({ remarkPlugins: [[remarkCodeHike, { theme }]] }),

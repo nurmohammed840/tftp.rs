@@ -1,6 +1,3 @@
-# Usage: python build.py
-# Generate The Book: python build.py book
-
 import os
 import sys
 import subprocess
@@ -19,10 +16,6 @@ def move_or_replace_file(src, dist):
 
     os.rename(src, dist)
 
-
-if not os.path.exists('dist/assets'):
-    os.makedirs('dist/assets')
-
 # --------------------------------------------------------------------------
 
 ids = []
@@ -32,47 +25,44 @@ for filename in os.listdir("./src/code"):
     if ext == 'mdx':
         ids.append(name)
 
-code = """<!-- Auto-generated file by build.py, Do not edit. -->
-<script type="module">
-import "@code-hike/mdx/dist/index.css";
+code = """/* Auto-generated file (build.py). Do not edit. */
 import React from 'react';
 import ReactDOM from 'react-dom';
 {}
 
 window.code ??= {};
 {}
-</script>
 """.format(
     '\n'.join(list(map(lambda x: "import {x} from '/src/code/{x}.mdx';".format(x = x), ids))),
     "{}",
     '\n'.join(list(map(lambda x: 'window.code.{x} = ele => ReactDOM.render(React.createElement({x}), ele);'.format(x = x), ids))),
 )
 
-with open('./index.html', 'w') as file:
+with open('./src/code/main.js', 'w') as file:
     file.write(code)
     
 # ---------------------------------------------------------------------------
 
-for filename in index_files('./dist/assets'):
-    if filename.endswith('.js') or filename.endswith('.css'):
-        file_path = './dist/assets/' + filename
-        os.remove(file_path)
-        print('Removed: ' + file_path)
+# for filename in index_files('./dist/assets'):
+#     if filename.endswith('.js') or filename.endswith('.css'):
+#         file_path = './dist/assets/' + filename
+#         os.remove(file_path)
+#         print('Removed: ' + file_path)
 
 
 execute_cmd('yarn build')
 
 
-for filename in index_files('./dist/assets'):
-    ext = os.path.splitext(filename)[1]
-    src = './dist/assets/' + filename
-    dist = './src/assets/index' + ext
+# for filename in index_files('./dist/assets'):
+#     ext = os.path.splitext(filename)[1]
+#     src = './dist/assets/' + filename
+#     dist = './src/assets/index' + ext
     
-    move_or_replace_file(src, dist)
-    print('Moved: ' + src + ' -> ' + dist)
+#     move_or_replace_file(src, dist)
+#     print('Moved: ' + src + ' -> ' + dist)
 
 
-if len(sys.argv) > 1 and sys.argv[1] == 'book':
-    execute_cmd('mdbook clean')
-    execute_cmd('mdbook build')
+# if len(sys.argv) > 1 and sys.argv[1] == 'book':
+#     execute_cmd('mdbook clean')
+#     execute_cmd('mdbook build')
 

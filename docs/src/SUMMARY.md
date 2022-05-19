@@ -5,7 +5,7 @@
 
 - [Details](./Details.md)
 - [Serialization](./Decoder.md)
-  - [Request](./Decoder.Request.md)
+  - [Text](./Decoder.Text.md)
   - [Frame](./Decoder.Frame.md)
 
 - [Interface]()
