@@ -84,9 +84,9 @@ Any errors cause termination of the connection. This packet is not acknowledged,
 
 <div id="err_code"></div>
 
-
+<link rel="stylesheet" href="./assets/code.css">
 <script type="module">
-    import "./assets/index.js";
+    import "./assets/code.js";
     code.frame(document.getElementById("frame"))
     code.errcode(document.getElementById("err_code"))
 </script>

@@ -2,22 +2,6 @@ import os
 import sys
 import subprocess
 
-def execute_cmd(cmd):
-    subprocess.call(cmd, shell=True)
-
-def index_files(path):
-    for filename in os.listdir(path):
-        if filename.startswith('index'):
-            yield filename
-
-def move_or_replace_file(src, dist):
-    if os.path.exists(dist):
-        os.remove(dist)
-
-    os.rename(src, dist)
-
-# --------------------------------------------------------------------------
-
 ids = []
 
 for filename in os.listdir("./src/code"):
@@ -43,26 +27,12 @@ with open('./src/code/main.js', 'w') as file:
     
 # ---------------------------------------------------------------------------
 
-# for filename in index_files('./dist/assets'):
-#     if filename.endswith('.js') or filename.endswith('.css'):
-#         file_path = './dist/assets/' + filename
-#         os.remove(file_path)
-#         print('Removed: ' + file_path)
-
+def execute_cmd(cmd):
+    subprocess.call(cmd, shell=True)
 
 execute_cmd('yarn build')
 
-
-# for filename in index_files('./dist/assets'):
-#     ext = os.path.splitext(filename)[1]
-#     src = './dist/assets/' + filename
-#     dist = './src/assets/index' + ext
-    
-#     move_or_replace_file(src, dist)
-#     print('Moved: ' + src + ' -> ' + dist)
-
-
-# if len(sys.argv) > 1 and sys.argv[1] == 'book':
-#     execute_cmd('mdbook clean')
-#     execute_cmd('mdbook build')
+if len(sys.argv) > 1 and sys.argv[1] == 'book':
+    execute_cmd('mdbook clean')
+    execute_cmd('mdbook build')
 

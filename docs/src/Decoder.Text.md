@@ -4,9 +4,12 @@
 
 Lets define the structure called `Text`, that knows how to decode.
 
-<link rel="stylesheet" href="./assets/code.slideshow.css">
+<code>print "Hello, World!"</code>
+
 <div id="text_parser"></div>
+
+<link rel="stylesheet" href="./assets/code.css">
 <script type="module">
-    import "./assets/index.js";
+    import "./assets/code.js";
     code.text_parser(document.getElementById("text_parser"))
 </script>
