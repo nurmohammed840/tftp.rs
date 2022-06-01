@@ -4,8 +4,6 @@
 
 Lets define the structure called `Text`, that knows how to decode.
 
-<code>print "Hello, World!"</code>
-
 <div id="text_parser"></div>
 
 <link rel="stylesheet" href="./assets/code.css">

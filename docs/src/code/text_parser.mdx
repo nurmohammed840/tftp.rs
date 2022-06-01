@@ -4,7 +4,7 @@
 use bin_layout::*;
 ```
 
-Asterisk `*` imports everything from the `bin_layout` crate and the `ErrorCode` enum.
+Asterisk `*` imports everything from the `bin_layout` crate.
 
 ---
 
@@ -97,7 +97,7 @@ impl<E: Error> Decoder<'_, E> for Text {
 }
 ```
 
-Let's iterate over remaining bytes and copy all bytes until `0` is found, `collect()` bytes into new `Vec<u8>`.
+Let's iterate over remaining bytes and copy all bytes until `0` is found, `collect()` each bytes into new `Vec<u8>`.
 
 Then increment the cursor offset by the length of the array + 1 (trailing `0` byte).
 

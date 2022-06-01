@@ -11,8 +11,6 @@ We need to know what type of packet it is. `opcode` defines the type of the pack
 | Error          |   5    |
 
 
-<link rel="stylesheet" href="./assets/code.slideshow.css">
-
 <div id="frame_encoder"></div>
 
 <!-- First we map the opcode from frame type. -->
@@ -22,21 +20,18 @@ First, let's extract the opcode by matching the frame type.
 
 <div id="frame_decoder"></div>
 
-`'a` isn't a generic parameter. It's called lifetime. In order to remove unused memory, We need some kind of tracking system.
+`'a` isn't a generic parameter. It's called lifetime. lifetime describes how long a reference to a value will be valid.
 
-One way is to manage the memory manually. But any common mistake can lead to security vulnerability and cause serious bugs.
+In order to remove unused memory, Program need some kind of tracking system. One way is to manage the memory manually. But any common mistake can lead to security vulnerability and cause serious bugs.
 
 Other approach is to track unused memory at runtime. [Garbage Collector](https://en.wikipedia.org/wiki/Garbage_collection_(computer_science)) is a program that reclaims unused memory. Another runtime approach is to use [smart pointers](https://en.wikipedia.org/wiki/Smart_pointer) (for example [reference counting](https://en.wikipedia.org/wiki/Reference_counting)). But any runtime approach has some overhead.
 
-Rust avoid garbage collection and manually manage memory by introducing some strict rules ([Ownership](https://doc.rust-lang.org/book/ch04-00-understanding-ownership.html) and [borrowing](https://doc.rust-lang.org/book/ch04-02-references-and-borrowing.html)) that must be followed.
-
-Rust compiler needs to know the lifetime of a reference in order to know when to free the memory.
-
+Rust avoid garbage collection and manually manage memory by introducing some strict rules ([Ownership](https://doc.rust-lang.org/book/ch04-00-understanding-ownership.html) and [Borrowing](https://doc.rust-lang.org/book/ch04-02-references-and-borrowing.html)) that must be followed.
 This isn't tutorial about lifetime and borrowing, So I just explained the need for a lifetime.
 
+<link rel="stylesheet" href="./assets/code.css">
 <script type="module">
-    import "./assets/index.js";
+    import "./assets/code.js";
     code.frame_encoder(document.getElementById("frame_encoder"))
     code.frame_decoder(document.getElementById("frame_decoder"))
 </script>
-
