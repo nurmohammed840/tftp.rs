@@ -1,0 +1,255 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js ayu">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Details - Trivial File Transfer Protocol</title>
+        <!-- Custom HTML head -->
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-4PSJT7CYV3"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+
+    gtag('config', 'G-4PSJT7CYV3');
+</script>        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="src/assets/mdbook-admonish.css">
+    </head>
+    <body>
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "ayu";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script type="text/javascript">
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('ayu')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="Introduction.html">Introduction</a></li><li class="chapter-item expanded "><a href="Details.html" class="active"><strong aria-hidden="true">1.</strong> Details</a></li><li class="chapter-item expanded "><a href="Decoder.html"><strong aria-hidden="true">2.</strong> Serialization</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="Decoder.Text.html"><strong aria-hidden="true">2.1.</strong> Text</a></li><li class="chapter-item expanded "><a href="Decoder.Frame.html"><strong aria-hidden="true">2.2.</strong> Frame</a></li></ol></li><li class="chapter-item expanded "><a href="UDP.html"><strong aria-hidden="true">3.</strong> User Datagram Protocol</a></li><li class="chapter-item expanded "><a href="Interface.html"><strong aria-hidden="true">4.</strong> Interface</a></li><li class="chapter-item expanded "><a href="Application.html"><strong aria-hidden="true">5.</strong> Application</a></li><li class="chapter-item expanded affix "><a href="Reference.html">Reference</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky bordered">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu (default)</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Trivial File Transfer Protocol</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/nurmohammed840/tftp.rs" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                        <a href="https://github.com/nurmohammed840/tftp.rs/blob/master/docs/src/Details.md" title="Suggest an edit" aria-label="Suggest an edit">
+                            <i id="git-edit-button" class="fa fa-edit"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script type="text/javascript">
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h2 id="details"><a class="header" href="#details">Details</a></h2>
+<p>No more talk! 🤫  I assume you have some basic programing knowledge, We will use Rust 🚀, 
+But no rust specific knowledge required.</p>
+<div id="frame"></div>
+<div id="admonition-default" class="admonition info">
+<div>
+<p><a href="https://doc.rust-lang.org/book/ch06-01-defining-an-enum.html">Enums</a> in rust are <a href="https://en.wikipedia.org/wiki/Algebraic_data_type">algebraic data type</a>, You can think of it as <a href="https://en.wikipedia.org/wiki/Tagged_union">discriminated unions</a>.</p>
+</div>
+</div>
+<p>We can then perform <a href="https://doc.rust-lang.org/rust-by-example/custom_types/enum.html">pattern matching</a> on enum, Ignore <code>&amp;'a</code> for now. ⌚</p>
+<h3 id="request"><a class="header" href="#request">Request</a></h3>
+<p>The client first requests the server to read or write some data. At <a href="https://en.wikipedia.org/wiki/List_of_TCP_and_UDP_port_numbers">wellknown port</a> <code>69</code>.</p>
+<p><code>Request</code> containing the filename, transfer mode and optionally any negotiated option. (We willn't discuss those options in this tutorial)</p>
+<h3 id="data-transfer"><a class="header" href="#data-transfer">Data Transfer</a></h3>
+<p>Based on request, The server or client sends data to the other endpoint.</p>
+<p>The data is sent in fixed length blocks of <code>512</code> bytes by default or the number specified in the blocksize negotiated option.</p>
+<p>The last data block must be less than the negotiated or default blocksize (which is <code>512</code>) to signals the end of the transfer.</p>
+<div id="admonition-default-1" class="admonition quote">
+<div>
+<p><em>What heppens when the last block is exact block sized data?</em></p>
+</div>
+</div>
+<p>If that happens, endpoint sends <code>0</code> sized packet to signal the end of the transfer.</p>
+<p>Initially, <code>block</code> number is <code>1</code>. On each transfer, the block number is incremented by one.</p>
+<div id="admonition-default-2" class="admonition quote">
+<div>
+<p><em>What happens when the block number is exhausted?</em></p>
+</div>
+</div>
+<p>Wikipedia says, The original protocol has a transfer file size limit of <code>512 * 65535</code> blocks = <code>32</code> MB, Today most servers and clients support block number roll-over (block counter going back to 0 or 1 after 65535) which gives an essentially unlimited transfer file size.</p>
+<div id="admonition-default-3" class="admonition note">
+<div>
+<p>If the response is positive, the server create a new socket and all transfers are performed using this new socket.</p>
+</div>
+</div>
+<p>This approach significantly simplifies the implementation of overall protocol. As we don't need to track each user's socket.</p>
+<h3 id="acknowledgement"><a class="header" href="#acknowledgement">Acknowledgement</a></h3>
+<p>For <a href="https://en.wikipedia.org/wiki/Packet_loss#Causes">various reasons</a>, there might be some <a href="https://en.wikipedia.org/wiki/Packet_loss">packet lost</a>. The sender detect packet loss using a timer and retransmit missing packets. </p>
+<p>Acknowledgement indicate that the data has been received.</p>
+<p>An Endpoint must send an acknowledgement packet for each data packet received.
+Acknowledgement number must be the same as the block number of the data packet.</p>
+<style>
+    .column { float: left; width: 33.33%; padding: 5px; box-sizing: border-box;  }
+    .row::after { content: ""; clear: both; display: table; }
+    @media screen and (max-width: 500px) { .column { width: 100%; }
+</style>
+<div class="row">
+  <div class="column">
+    <img src="./assets/RRQ.svg" alt="RRQ" style="width:100%">
+  </div>
+  <div class="column">
+    <img src="./assets/WRQ.svg" alt="WRQ" style="width:100%">
+  </div>
+</div>
+<p><a href="https://en.wikipedia.org/wiki/Lockstep_(computing)">Lock step</a> system guarantees that all older packets have been received.</p>
+<div id="admonition-default-4" class="admonition note">
+<div>
+<p>Positive response to a write request is an acknowledgment packet, in this special case the block number will be zero.</p>
+</div>
+</div>
+<h3 id="error"><a class="header" href="#error">Error</a></h3>
+<p>Any errors cause termination of the connection. This packet is not acknowledged, and not retransmitted. An Error packet contain an error code and text message.</p>
+<div id="err_code"></div>
+<link rel="stylesheet" href="./assets/code.css">
+<script type="module" src="./code/details.js"></script>
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="Introduction.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+                            <a rel="next" href="Decoder.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="Introduction.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                    <a rel="next" href="Decoder.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+        <script type="text/javascript">
+            window.playground_copyable = true;
+        </script>
+        <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="searcher.js" type="text/javascript" charset="utf-8"></script>
+        <script src="clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="highlight.js" type="text/javascript" charset="utf-8"></script>
+        <script src="book.js" type="text/javascript" charset="utf-8"></script>
+
+        <!-- Custom JS scripts -->
+    </body>
+</html>
