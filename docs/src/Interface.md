@@ -8,9 +8,9 @@ Keyword `pub` is used to export items from the module. It's also can be used to 
 
 <div id="server_methods"></div>
 
-- `listen()` - create a `Server` instance. You may think that `listen()` is a constructor function. 
+`listen()` function create a `Server` instance. You may think that `listen()` is a constructor function. 
 
-- `accept()` - Accept a new incoming connection. If the request is  `RRQ` or `WRQ`, then create a new `Context` instance and return it.
+`accept()` function accept a new incoming connection. If the request is  `RRQ` or `WRQ`, then create a new `Context` instance and return it.
 
 
 ### Context

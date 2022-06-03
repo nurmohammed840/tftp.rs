@@ -9,6 +9,7 @@ use Frame::*;
 
 pub use interface::*;
 
+#[derive(Clone)]
 pub struct Text(String);
 
 pub enum ErrorCode {
@@ -22,7 +23,7 @@ pub enum ErrorCode {
     NoSuchUser,
 }
 
-#[derive(Encoder, Decoder)]
+#[derive(Encoder, Decoder, Clone)]
 pub struct Request {
     pub filename: Text,
     pub mode: Text,
