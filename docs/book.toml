@@ -9,6 +9,7 @@ title = "Trivial File Transfer Protocol"
 default-theme = "ayu"
 git-repository-icon = "fa-github"
 git-repository-url = "https://github.com/nurmohammed840/tftp.rs"
+edit-url-template = "https://github.com/nurmohammed840/tftp.rs/blob/master/docs/{path}"
 additional-css = ["src/assets/mdbook-admonish.css"]
 
 [preprocessor]
