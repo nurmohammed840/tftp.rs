@@ -30,8 +30,4 @@ Rust avoid garbage collection and manually manage memory by introducing some str
 This isn't tutorial about lifetime and borrowing, So I just explained the need for a lifetime.
 
 <link rel="stylesheet" href="./assets/code.css">
-<script type="module">
-    import "./assets/code.js";
-    code.frame_encoder(document.getElementById("frame_encoder"))
-    code.frame_decoder(document.getElementById("frame_decoder"))
-</script>
+<script type="module" src="./code/frame_decoder.js"></script>

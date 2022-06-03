@@ -19,8 +19,8 @@ fn server() -> Result<()> {
 fn client(method: Method) -> Result<()> {
     thread::sleep(Duration::from_millis(10));
     let ctx = Context {
-        req: Request::new("filename", "mode"),
         method,
+        req: Request::new("filename", "mode"),
         addr: "127.0.0.1:69".parse().unwrap(),
     };
 
@@ -35,15 +35,15 @@ fn client(method: Method) -> Result<()> {
 
 fn recv_msg(ctx: Context) -> String {
     let mut writer = Vec::new();
-    ctx.recv_data(&mut writer).unwrap();
+    ctx.recv_data(&mut writer);
     String::from_utf8(writer).unwrap()
 }
 
 fn run(method: Method) {
     let server = thread::spawn(server);
     let client = thread::spawn(move || client(method));
-    server.join().unwrap();
-    client.join().unwrap();
+    server.join();
+    client.join();
 }
 
 fn main() {

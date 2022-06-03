@@ -58,9 +58,7 @@ Acknowledgement number must be the same as the block number of the data packet.
 
 <style>
     .column { float: left; width: 33.33%; padding: 5px; box-sizing: border-box;  }
-    /* Clearfix (clear floats) */
     .row::after { content: ""; clear: both; display: table; }
-    /* Responsive layout - makes the three columns stack on top of each other instead of next to each other */
     @media screen and (max-width: 500px) { .column { width: 100%; }
 </style>
 <div class="row">
@@ -85,8 +83,4 @@ Any errors cause termination of the connection. This packet is not acknowledged,
 <div id="err_code"></div>
 
 <link rel="stylesheet" href="./assets/code.css">
-<script type="module">
-    import "./assets/code.js";
-    code.frame(document.getElementById("frame"))
-    code.errcode(document.getElementById("err_code"))
-</script>
+<script type="module" src="./code/details.js"></script>

@@ -59,7 +59,7 @@ impl Context {
         let socket = UdpSocket::bind("0.0.0.0:0")?;
         socket.set_read_timeout(Some(Duration::from_secs(7)))?;
 
-        let mut buf = vec![0; 512];
+        let mut buf = [0; 512];
 
         socket.connect(match self.method {
             Method::Write => {
@@ -86,7 +86,10 @@ impl Context {
                 match recv_ack(&socket) {
                     Err(err) if matches!(err.kind(), WouldBlock | TimedOut) => {
                         if attapmt == 3 {
-                            let err_msg = ErrMsg { code: AccessViolation, msg: Text("Max retransmit reached".into()) };
+                            let err_msg = ErrMsg { 
+                                code: AccessViolation,
+                                msg: Text("Max retransmit reached".into()) 
+                            };
                             socket.send(&err_msg.encode())?;
                             return Err(err);
                         }
@@ -106,23 +109,22 @@ impl Context {
         let socket = UdpSocket::bind("0.0.0.0:0")?;
         socket.set_read_timeout(Some(Duration::from_secs(7)))?;
 
-        let mut len;
-        let mut curr_block = 1;
-        let mut buf = vec![0; 512];
-
-        match self.method {
+        let mut buf = [0; 512];
+        let mut len = match self.method {
             Method::Read => {
                 socket.send_to(&Read(self.req).encode(), self.addr)?;
-                let (amt, addr) = socket.recv_from(&mut buf)?;
+                let (len, addr) = socket.recv_from(&mut buf)?;
                 socket.connect(addr)?;
-                len = amt;
+                len
             }
             Method::Write => {
                 socket.send_to(&Acknowledge(0).encode(), self.addr)?;
                 socket.connect(self.addr)?;
-                len = socket.recv(&mut buf)?;
+                socket.recv(&mut buf)?
             }
-        }
+        };
+
+        let mut curr_block = 1;
         loop {
             recv_frame!(&buf[..len], Data { block, bytes } => {
                 socket.send(&Acknowledge(block).encode())?;

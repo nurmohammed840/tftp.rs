@@ -7,7 +7,4 @@ Lets define the structure called `Text`, that knows how to decode.
 <div id="text_parser"></div>
 
 <link rel="stylesheet" href="./assets/code.css">
-<script type="module">
-    import "./assets/code.js";
-    code.text_parser(document.getElementById("text_parser"))
-</script>
+<script type="module" src="./code/text_parser.js"></script>
