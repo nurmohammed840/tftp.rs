@@ -1,55 +1,52 @@
-## Details
-
-No more talk! 🤫  I assume you have some basic programing knowledge, We will use Rust 🚀, 
-But no rust specific knowledge required.
-
-<div id="frame"></div>
-
-```admonish info ""
-[Enums](https://doc.rust-lang.org/book/ch06-01-defining-an-enum.html) in rust are [algebraic data type](https://en.wikipedia.org/wiki/Algebraic_data_type), You can think of it as [discriminated unions](https://en.wikipedia.org/wiki/Tagged_union). 
-```
-
-We can then perform [pattern matching](https://doc.rust-lang.org/rust-by-example/custom_types/enum.html) on enum, Ignore `&'a` for now. ⌚
-
 ### Request
 
-The client first requests the server to read or write some data. At [wellknown port](https://en.wikipedia.org/wiki/List_of_TCP_and_UDP_port_numbers) `69`.
+The client first requests the server to read or write some data. At [well known port](https://en.wikipedia.org/wiki/List_of_TCP_and_UDP_port_numbers) `69`.
 
- `Request` containing the filename, transfer mode and optionally any negotiated option. (We willn't discuss those options in this tutorial)
+`Request` frame containing the filename, transfer mode and optionally any negotiated option. (We will not discuss those options in this tutorial)
 
+```rust
+pub struct Resource {
+    pub filename: Text,
+    pub mode: Text,
+}
+```
+
+```admonish note ""
+`Text` is nul-terminated modified version of ascii string.
+```
 
 ### Data Transfer
 
-Based on request, The server or client sends data to the other endpoint.
+Based on request, The server or client sends the data frame to the other endpoint. Data frame contains a `block` number and payload. 
 
-The data is sent in fixed length blocks of `512` bytes by default or the number specified in the blocksize negotiated option.
+The payload is sent in a fixed length buffer of `512` bytes by default or the number specified in the block size negotiated option.
 
-The last data block must be less than the negotiated or default blocksize (which is `512`) to signals the end of the transfer.
+The last data block must be less than the negotiated or default blocksize (which is `512`) to signal the end of the transfer.
 
 ```admonish quote ""
-_What heppens when the last block is exact block sized data?_
+_What happens when the last block is exact block sized ?_
 ```
 
-If that happens, endpoint sends `0` sized packet to signal the end of the transfer.
+If that happens, the endpoint sends a data frame of `0` byte to signal the end of the transfer.
 
 Initially, `block` number is `1`. On each transfer, the block number is incremented by one.
 
 ```admonish quote ""
-_What happens when the block number is exhausted?_
+_What happens when the block number is exhausted ?_
 ```
 
-Wikipedia says, The original protocol has a transfer file size limit of `512 * 65535` blocks = `32` MB, Today most servers and clients support block number roll-over (block counter going back to 0 or 1 after 65535) which gives an essentially unlimited transfer file size.
+According to wikipedia, The original protocol has a transfer file size limit of `512 * 65535` blocks = `32` MB, Today most servers and clients support block number roll-over (block counter going back to 0 or 1 after 65535) which gives an essentially unlimited transfer file size.
 
 
 ```admonish note ""
 If the response is positive, the server create a new socket and all transfers are performed using this new socket.
 ```
 
-This approach significantly simplifies the implementation of overall protocol. As we don't need to track each user's socket.
+This significantly simplifies the implementation of overall protocol. As we don't need to track each socket.
 
 ### Acknowledgement
 
-For [various reasons](https://en.wikipedia.org/wiki/Packet_loss#Causes), there might be some [packet lost](https://en.wikipedia.org/wiki/Packet_loss). The sender detect packet loss using a timer and retransmit missing packets. 
+For [various reasons](https://en.wikipedia.org/wiki/Packet_loss#Causes), there might be some [packet lost](https://en.wikipedia.org/wiki/Packet_loss). The sender detect packet loss using a timer and retransmit missing packets. This is known as [acknowledgement](https://en.wikipedia.org/wiki/Acknowledgement_(data_networks)).
 
 Acknowledgement indicate that the data has been received.
 
@@ -70,7 +67,7 @@ Acknowledgement number must be the same as the block number of the data packet.
   </div>
 </div>
 
-[Lock step](https://en.wikipedia.org/wiki/Lockstep_(computing)) system guarantees that all older packets have been received.
+It guarantees that all old packets are received and prevents [network congestion](https://en.wikipedia.org/wiki/Network_congestion).
 
 ```admonish note ""
 Positive response to a write request is an acknowledgment packet, in this special case the block number will be zero.
@@ -78,9 +75,56 @@ Positive response to a write request is an acknowledgment packet, in this specia
 
 ### Error
 
-Any errors cause termination of the connection. This packet is not acknowledged, and not retransmitted. An Error packet contain an error code and text message.
+Any errors cause termination of the connection. This packet is not acknowledged, and not retransmitted.
 
-<div id="err_code"></div>
+```rust
+#[repr(u16)]
+pub enum ErrorCode {
+    NotDefined,
+    FileNotFound,
+    AccessViolation,
+    DiskFull,
+    IllegalOperation,
+    UnknownTransferID,
+    FileAlreadyExists,
+    NoSuchUser,
+}
+```
 
-<link rel="stylesheet" href="./assets/code.css">
-<script type="module" src="./code/details.js"></script>
+An error frame contains an error code and reason.
+
+```rust
+pub struct Error {
+    pub code: ErrorCode,
+    pub reason: Text,
+}
+```
+
+## Frame
+
+In networking, a [frame](https://en.wikipedia.org/wiki/Frame_(networking)) is a fundamental unit of data transmission between two endpoint.
+
+```rust
+#[repr(u16)]
+pub enum Frame {
+    Read(Resource) = 1,
+    Write(Resource) = 2,
+    Data { block: u16, bytes: Bytes } = 3,
+    Acknowledge(u16) = 4,
+    Error(Error) = 5,
+}
+```
+
+Here is the binary format of each [packet](https://en.wikipedia.org/wiki/Network_packet):
+
+![Data Format](./assets/data_format.svg)
+
+The first 2 bytes of each packet type are known as the `opcode` or [discriminant](https://en.wikipedia.org/wiki/Discriminator), It is just a number that identifies the type of the frame.
+
+| Opcode | Frame Type     |
+| :----: | :------------: |
+|   1    | Read Request   |
+|   2    | Write Request  |
+|   3    | Data           |
+|   4    | Acknowledgment |
+|   5    | Error          |

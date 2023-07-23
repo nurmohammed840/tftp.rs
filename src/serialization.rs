@@ -1,80 +1,47 @@
 use crate::*;
-use bin_layout::*;
+use databuf::{config::num::BE, Result};
+use std::io::{self, BufRead, Write};
 
-impl Encoder for Text {
-    fn encoder(self, arr: &mut impl Array<u8>) {
-        arr.extend_from_slice(self.0);
-        arr.push(0);
+impl Encode for Text {
+    fn encode<const CONFIG: u16>(&self, writer: &mut (impl Write + ?Sized)) -> io::Result<()> {
+        writer.write_all(self.0.as_bytes())?;
+        writer.write_all(&[0])
     }
 }
 
-impl<E: Error> Decoder<'_, E> for Text {
-    fn decoder(c: &mut Cursor<&[u8]>) -> Result<Self, E> {
-        let bytes: Vec<u8> = c
-            .remaining_slice()
-            .iter()
-            .take_while(|&b| *b != 0)
-            .copied()
-            .collect();
-
-        c.offset += bytes.len() + 1;
-        let string = String::from_utf8(bytes).map_err(E::from_utf8_err)?;
-        Ok(Text(string))
-    }
-}
-
-impl Encoder for Frame<'_> {
-    fn encoder(self, c: &mut impl Array<u8>) {
-        let opcode: u16 = match self {
-            Read(..) => 1,
-            Write(..) => 2,
-            Data { .. } => 3,
-            Acknowledge { .. } => 4,
-            ErrMsg { .. } => 5,
-        };
-
-        opcode.encoder(c);
-
-        match self {
-            Read(req) | Write(req) => req.encoder(c),
-            Data { block, bytes } => {
-                block.encoder(c);
-                c.extend_from_slice(bytes);
-            }
-            Acknowledge(num) => num.encoder(c),
-            ErrMsg { code, msg } => {
-                (code as u16).encoder(c);
-                msg.encoder(c);
-            }
+impl Decode<'_> for Text {
+    fn decode<const CONFIG: u16>(reader: &mut &[u8]) -> Result<Self> {
+        let mut buf = Vec::new();
+        reader.read_until(0, &mut buf)?;
+        if let Some(0) = buf.last() {
+            buf.pop();
         }
+        Ok(Text(String::from_utf8(buf)?))
     }
 }
 
-impl<'a, E: Error> Decoder<'a, E> for Frame<'a> {
-    fn decoder(c: &mut Cursor<&'a [u8]>) -> Result<Self, E> {
-        let opcode = u16::decoder(c)?;
-        Ok(match opcode {
-            1 => Read(Request::decoder(c)?),
-            2 => Write(Request::decoder(c)?),
-            3 => Data {
-                block: u16::decoder(c)?,
-                bytes: c.remaining_slice(),
-            },
-            4 => Acknowledge(u16::decoder(c)?),
-            5 => ErrMsg {
-                code: match u16::decoder(c)? {
-                    1 => FileNotFound,
-                    2 => AccessViolation,
-                    3 => DiskFull,
-                    4 => IllegalOperation,
-                    5 => UnknownTransferID,
-                    6 => FileAlreadyExists,
-                    7 => NoSuchUser,
-                    _ => NotDefined,
-                },
-                msg: Text::decoder(c)?,
-            },
-            _ => return Err(E::invalid_data()),
-        })
+impl Encode for Bytes {
+    fn encode<const CONFIG: u16>(&self, writer: &mut (impl Write + ?Sized)) -> io::Result<()> {
+        writer.write_all(&self.0)
+    }
+}
+
+impl Decode<'_> for Bytes {
+    fn decode<const CONFIG: u16>(reader: &mut &[u8]) -> Result<Self> {
+        Ok(Bytes(reader.to_vec()))
+    }
+}
+
+impl Frame {
+    pub fn parse(bytes: &[u8]) -> Result<Self> {
+        let frame = Frame::from_bytes::<BE>(bytes)?;
+        if let Frame::Error(err) = frame {
+            return Err(Box::new(err));
+        }
+        Ok(frame)
+    }
+
+    pub fn as_bytes(&self) -> Vec<u8> {
+        self.to_bytes::<BE>()
     }
 }

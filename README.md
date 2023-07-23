@@ -4,7 +4,7 @@
 
 TFTP is designed to be small and easy to implement. Therefore, It's a nice protocol to studying about network.
 
-Becouse of simplicity, TFTP use very small memory footprint. Ideal for [embedded systems](https://en.wikipedia.org/wiki/Embedded_system).
+Because of simplicity, TFTP use very small memory footprint. Ideal for [embedded systems](https://en.wikipedia.org/wiki/Embedded_system).
 
 Today, TFTP is virtually unused for Internet transfers, Generally only used on [local area networks](https://en.wikipedia.org/wiki/Local_area_network) (LAN)
 
