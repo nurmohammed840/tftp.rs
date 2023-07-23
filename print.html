@@ -5,16 +5,10 @@
         <meta charset="UTF-8">
         <title>Trivial File Transfer Protocol</title>
         <meta name="robots" content="noindex" />
-        <!-- Custom HTML head -->
-<!-- Global site tag (gtag.js) - Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-4PSJT7CYV3"></script>
-<script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag() { dataLayer.push(arguments); }
-    gtag('js', new Date());
 
-    gtag('config', 'G-4PSJT7CYV3');
-</script>        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+
+        <!-- Custom HTML head -->
+        
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
@@ -25,9 +19,11 @@
         <link rel="stylesheet" href="css/general.css">
         <link rel="stylesheet" href="css/chrome.css">
         <link rel="stylesheet" href="css/print.css" media="print">
+
         <!-- Fonts -->
         <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link rel="stylesheet" href="fonts/fonts.css">
+
         <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
@@ -35,16 +31,18 @@
 
         <!-- Custom theme stylesheets -->
         <link rel="stylesheet" href="src/assets/mdbook-admonish.css">
+
     </head>
     <body>
+    <div id="body-container">
         <!-- Provide site root to javascript -->
-        <script type="text/javascript">
+        <script>
             var path_to_root = "";
             var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "ayu";
         </script>
 
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
-        <script type="text/javascript">
+        <script>
             try {
                 var theme = localStorage.getItem('mdbook-theme');
                 var sidebar = localStorage.getItem('mdbook-sidebar');
@@ -60,7 +58,7 @@
         </script>
 
         <!-- Set the theme before any content is loaded, prevents flash -->
-        <script type="text/javascript">
+        <script>
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
             if (theme === null || theme === undefined) { theme = default_theme; }
@@ -72,12 +70,14 @@
         </script>
 
         <!-- Hide / unhide sidebar before it is displayed -->
-        <script type="text/javascript">
+        <script>
             var html = document.querySelector('html');
-            var sidebar = 'hidden';
+            var sidebar = null;
             if (document.body.clientWidth >= 1080) {
                 try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
                 sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
             }
             html.classList.remove('sidebar-visible');
             html.classList.add("sidebar-" + sidebar);
@@ -85,7 +85,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded affix "><a href="Introduction.html">Introduction</a></li><li class="chapter-item expanded "><a href="Details.html"><strong aria-hidden="true">1.</strong> Details</a></li><li class="chapter-item expanded "><a href="Decoder.html"><strong aria-hidden="true">2.</strong> Serialization</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="Decoder.Text.html"><strong aria-hidden="true">2.1.</strong> Text</a></li><li class="chapter-item expanded "><a href="Decoder.Frame.html"><strong aria-hidden="true">2.2.</strong> Frame</a></li></ol></li><li class="chapter-item expanded "><a href="UDP.html"><strong aria-hidden="true">3.</strong> User Datagram Protocol</a></li><li class="chapter-item expanded "><a href="Interface.html"><strong aria-hidden="true">4.</strong> Interface</a></li><li class="chapter-item expanded "><a href="Application.html"><strong aria-hidden="true">5.</strong> Application</a></li><li class="chapter-item expanded affix "><a href="Reference.html">Reference</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="Introduction.html">Introduction</a></li><li class="chapter-item expanded "><a href="Details.html"><strong aria-hidden="true">1.</strong> Details</a></li><li class="chapter-item expanded "><a href="UDP.html"><strong aria-hidden="true">2.</strong> User Datagram Protocol</a></li><li class="chapter-item expanded affix "><a href="Reference.html">Reference</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -93,7 +93,7 @@
         <div id="page-wrapper" class="page-wrapper">
 
             <div class="page">
-                <div id="menu-bar-hover-placeholder"></div>
+                                <div id="menu-bar-hover-placeholder"></div>
                 <div id="menu-bar" class="menu-bar sticky bordered">
                     <div class="left-buttons">
                         <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
@@ -107,7 +107,7 @@
                             <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
-                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu (default)</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
                         </ul>
                         <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
                             <i class="fa fa-search"></i>
@@ -123,6 +123,7 @@
                         <a href="https://github.com/nurmohammed840/tftp.rs" title="Git repository" aria-label="Git repository">
                             <i id="git-repository-button" class="fa fa-github"></i>
                         </a>
+
                     </div>
                 </div>
 
@@ -136,8 +137,9 @@
                         </ul>
                     </div>
                 </div>
+
                 <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
-                <script type="text/javascript">
+                <script>
                     document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
                     document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
                     Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
@@ -149,48 +151,50 @@
                     <main>
                         <h2 id="introduction"><a class="header" href="#introduction">Introduction</a></h2>
 <p><a href="https://en.wikipedia.org/wiki/Trivial_File_Transfer_Protocol">Trivial File Transfer Protocol</a> (TFTP) is a simple <a href="https://en.wikipedia.org/wiki/Lockstep_(computing)">lockstep</a> <a href="https://en.wikipedia.org/wiki/File_Transfer_Protocol">File Transfer Protocol</a> which allows a client to get a file from or put a file onto a remote host.</p>
-<p>TFTP is designed to be small and easy to implement. Therefore, It's a nice protocol to studying about network.</p>
-<p>Becouse of simplicity, TFTP use very small memory footprint. Ideal for <a href="https://en.wikipedia.org/wiki/Embedded_system">embedded systems</a>.</p>
+<p>TFTP is designed to be small and easy to implement. Therefore, It's a nice protocol to study about networks.</p>
+<p>Because of simplicity, TFTP use very small memory footprint. Ideal for <a href="https://en.wikipedia.org/wiki/Embedded_system">embedded systems</a>.</p>
 <p>Today, TFTP is virtually unused for Internet transfers, Generally only used on <a href="https://en.wikipedia.org/wiki/Local_area_network">local area networks</a> (LAN)</p>
-<p>It implemented on top of the <a href="https://en.wikipedia.org/wiki/UDP/IP">UDP/IP</a> protocols using well-known port number 69.</p>
-<div style="break-before: page; page-break-before: always;"></div><h2 id="details"><a class="header" href="#details">Details</a></h2>
-<p>No more talk! 🤫  I assume you have some basic programing knowledge, We will use Rust 🚀, 
-But no rust specific knowledge required.</p>
-<div id="frame"></div>
-<div id="admonition-default" class="admonition info">
+<p>It is implemented on top of the <a href="https://en.wikipedia.org/wiki/UDP/IP">UDP/IP</a> protocols using well-known port number 69.</p>
+<div style="break-before: page; page-break-before: always;"></div><h3 id="request"><a class="header" href="#request">Request</a></h3>
+<p>The client first requests the server to read or write some data. At <a href="https://en.wikipedia.org/wiki/List_of_TCP_and_UDP_port_numbers">well known port</a> <code>69</code>.</p>
+<p><code>Request</code> frame containing the filename, transfer mode and optionally any negotiated option. (We will not discuss those options in this tutorial)</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub struct Resource {
+    pub filename: Text,
+    pub mode: Text,
+}
+<span class="boring">}</span></code></pre></pre>
+<div id="admonition-default" class="admonition note">
 <div>
-<p><a href="https://doc.rust-lang.org/book/ch06-01-defining-an-enum.html">Enums</a> in rust are <a href="https://en.wikipedia.org/wiki/Algebraic_data_type">algebraic data type</a>, You can think of it as <a href="https://en.wikipedia.org/wiki/Tagged_union">discriminated unions</a>.</p>
+<p><code>Text</code> is nul-terminated modified version of ascii string.</p>
 </div>
 </div>
-<p>We can then perform <a href="https://doc.rust-lang.org/rust-by-example/custom_types/enum.html">pattern matching</a> on enum, Ignore <code>&amp;'a</code> for now. ⌚</p>
-<h3 id="request"><a class="header" href="#request">Request</a></h3>
-<p>The client first requests the server to read or write some data. At <a href="https://en.wikipedia.org/wiki/List_of_TCP_and_UDP_port_numbers">wellknown port</a> <code>69</code>.</p>
-<p><code>Request</code> containing the filename, transfer mode and optionally any negotiated option. (We willn't discuss those options in this tutorial)</p>
 <h3 id="data-transfer"><a class="header" href="#data-transfer">Data Transfer</a></h3>
-<p>Based on request, The server or client sends data to the other endpoint.</p>
-<p>The data is sent in fixed length blocks of <code>512</code> bytes by default or the number specified in the blocksize negotiated option.</p>
-<p>The last data block must be less than the negotiated or default blocksize (which is <code>512</code>) to signals the end of the transfer.</p>
+<p>Based on request, The server or client sends the data frame to the other endpoint. Data frame contains a <code>block</code> number and payload. </p>
+<p>The payload is sent in a fixed length buffer of <code>512</code> bytes by default or the number specified in the block size negotiated option.</p>
+<p>The last data block must be less than the negotiated or default blocksize (which is <code>512</code>) to signal the end of the transfer.</p>
 <div id="admonition-default-1" class="admonition quote">
 <div>
-<p><em>What heppens when the last block is exact block sized data?</em></p>
+<p><em>What happens when the last block is exact block sized ?</em></p>
 </div>
 </div>
-<p>If that happens, endpoint sends <code>0</code> sized packet to signal the end of the transfer.</p>
+<p>If that happens, the endpoint sends a data frame of <code>0</code> byte to signal the end of the transfer.</p>
 <p>Initially, <code>block</code> number is <code>1</code>. On each transfer, the block number is incremented by one.</p>
 <div id="admonition-default-2" class="admonition quote">
 <div>
-<p><em>What happens when the block number is exhausted?</em></p>
+<p><em>What happens when the block number is exhausted ?</em></p>
 </div>
 </div>
-<p>Wikipedia says, The original protocol has a transfer file size limit of <code>512 * 65535</code> blocks = <code>32</code> MB, Today most servers and clients support block number roll-over (block counter going back to 0 or 1 after 65535) which gives an essentially unlimited transfer file size.</p>
+<p>According to wikipedia, The original protocol has a transfer file size limit of <code>512 * 65535</code> blocks = <code>32</code> MB, Today most servers and clients support block number roll-over (block counter going back to 0 or 1 after 65535) which gives an essentially unlimited transfer file size.</p>
 <div id="admonition-default-3" class="admonition note">
 <div>
 <p>If the response is positive, the server create a new socket and all transfers are performed using this new socket.</p>
 </div>
 </div>
-<p>This approach significantly simplifies the implementation of overall protocol. As we don't need to track each user's socket.</p>
+<p>This significantly simplifies the implementation of overall protocol. As we don't need to track each socket.</p>
 <h3 id="acknowledgement"><a class="header" href="#acknowledgement">Acknowledgement</a></h3>
-<p>For <a href="https://en.wikipedia.org/wiki/Packet_loss#Causes">various reasons</a>, there might be some <a href="https://en.wikipedia.org/wiki/Packet_loss">packet lost</a>. The sender detect packet loss using a timer and retransmit missing packets. </p>
+<p>For <a href="https://en.wikipedia.org/wiki/Packet_loss#Causes">various reasons</a>, there might be some <a href="https://en.wikipedia.org/wiki/Packet_loss">packet lost</a>. The sender detect packet loss using a timer and retransmit missing packets. This is known as <a href="https://en.wikipedia.org/wiki/Acknowledgement_(data_networks)">acknowledgement</a>.</p>
 <p>Acknowledgement indicate that the data has been received.</p>
 <p>An Endpoint must send an acknowledgement packet for each data packet received.
 Acknowledgement number must be the same as the block number of the data packet.</p>
@@ -207,62 +211,79 @@ Acknowledgement number must be the same as the block number of the data packet.<
     <img src="./assets/WRQ.svg" alt="WRQ" style="width:100%">
   </div>
 </div>
-<p><a href="https://en.wikipedia.org/wiki/Lockstep_(computing)">Lock step</a> system guarantees that all older packets have been received.</p>
+<p>It guarantees that all old packets are received and prevents <a href="https://en.wikipedia.org/wiki/Network_congestion">network congestion</a>.</p>
 <div id="admonition-default-4" class="admonition note">
 <div>
 <p>Positive response to a write request is an acknowledgment packet, in this special case the block number will be zero.</p>
 </div>
 </div>
 <h3 id="error"><a class="header" href="#error">Error</a></h3>
-<p>Any errors cause termination of the connection. This packet is not acknowledged, and not retransmitted. An Error packet contain an error code and text message.</p>
-<div id="err_code"></div>
-<link rel="stylesheet" href="./assets/code.css">
-<script type="module" src="./code/details.js"></script><div style="break-before: page; page-break-before: always;"></div><h2 id="frame-layout"><a class="header" href="#frame-layout">Frame Layout</a></h2>
-<p>Packet does not come in such beautiful structure, Data comes in binary format. Here is the binary format of each frame:</p>
+<p>Any errors cause termination of the connection. This packet is not acknowledged, and not retransmitted.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[repr(u16)]
+pub enum ErrorCode {
+    NotDefined,
+    FileNotFound,
+    AccessViolation,
+    DiskFull,
+    IllegalOperation,
+    UnknownTransferID,
+    FileAlreadyExists,
+    NoSuchUser,
+}
+<span class="boring">}</span></code></pre></pre>
+<p>An error frame contains an error code and reason.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub struct Error {
+    pub code: ErrorCode,
+    pub reason: Text,
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="frame"><a class="header" href="#frame">Frame</a></h2>
+<p>In networking, a <a href="https://en.wikipedia.org/wiki/Frame_(networking)">frame</a> is a fundamental unit of data transmission between two endpoint.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[repr(u16)]
+pub enum Frame {
+    Read(Resource) = 1,
+    Write(Resource) = 2,
+    Data { block: u16, bytes: Bytes } = 3,
+    Acknowledge(u16) = 4,
+    Error(Error) = 5,
+}
+<span class="boring">}</span></code></pre></pre>
+<p>Here is the binary format of each <a href="https://en.wikipedia.org/wiki/Network_packet">packet</a>:</p>
 <p><img src="./assets/data_format.svg" alt="Data Format" /></p>
-<p>First 2 bytes of each packet is <code>opcode</code>, It describes the type of the packet.</p>
-<p>We will use a library called <a href="https://github.com/nurmohammed840/bin-layout.rs">bin-layout</a> to decode the binary data.</p>
-<pre><code class="language-toml">[dependencies]
-bin-layout = &quot;5&quot;
-</code></pre>
-<div style="break-before: page; page-break-before: always;"></div><h2 id="request-decoder"><a class="header" href="#request-decoder">Request Decoder</a></h2>
-<p><code>Text</code> field is the data in ascii format, End with <code>0x0</code> byte.</p>
-<p>Lets define the structure called <code>Text</code>, that knows how to decode.</p>
-<div id="text_parser"></div>
-<link rel="stylesheet" href="./assets/code.css">
-<script type="module" src="./code/text_parser.js"></script><div style="break-before: page; page-break-before: always;"></div><h2 id="frame-layout-1"><a class="header" href="#frame-layout-1">Frame Layout</a></h2>
-<p>We need to know what type of packet it is. <code>opcode</code> defines the type of the packet. <code>opcode</code> is 2 bytes long.</p>
-<table><thead><tr><th>Frame Type</th><th style="text-align: center">Opcode</th></tr></thead><tbody>
-<tr><td>Read request</td><td style="text-align: center">1</td></tr>
-<tr><td>Write request</td><td style="text-align: center">2</td></tr>
-<tr><td>Data</td><td style="text-align: center">3</td></tr>
-<tr><td>Acknowledgment</td><td style="text-align: center">4</td></tr>
-<tr><td>Error</td><td style="text-align: center">5</td></tr>
+<p>The first 2 bytes of each packet type are known as the <code>opcode</code> or <a href="https://en.wikipedia.org/wiki/Discriminator">discriminant</a>, It is just a number that identifies the type of the frame.</p>
+<div class="table-wrapper"><table><thead><tr><th style="text-align: center">Opcode</th><th style="text-align: center">Frame Type</th></tr></thead><tbody>
+<tr><td style="text-align: center">1</td><td style="text-align: center">Read Request</td></tr>
+<tr><td style="text-align: center">2</td><td style="text-align: center">Write Request</td></tr>
+<tr><td style="text-align: center">3</td><td style="text-align: center">Data</td></tr>
+<tr><td style="text-align: center">4</td><td style="text-align: center">Acknowledgment</td></tr>
+<tr><td style="text-align: center">5</td><td style="text-align: center">Error</td></tr>
 </tbody></table>
-<div id="frame_encoder"></div>
-<!-- First we map the opcode from frame type. -->
-<p>First, let's extract the opcode by matching the frame type.</p>
-<p><code>..</code> Operator means, we are not interested in the rest of the fields.</p>
-<div id="frame_decoder"></div>
-<p><code>'a</code> isn't a generic parameter. It's called lifetime. lifetime describes how long a reference to a value will be valid.</p>
-<p>In order to remove unused memory, Program need some kind of tracking system. One way is to manage the memory manually. But any common mistake can lead to security vulnerability and cause serious bugs.</p>
-<p>Other approach is to track unused memory at runtime. <a href="https://en.wikipedia.org/wiki/Garbage_collection_(computer_science)">Garbage Collector</a> is a program that reclaims unused memory. Another runtime approach is to use <a href="https://en.wikipedia.org/wiki/Smart_pointer">smart pointers</a> (for example <a href="https://en.wikipedia.org/wiki/Reference_counting">reference counting</a>). But any runtime approach has some overhead.</p>
-<p>Rust avoid garbage collection and manually manage memory by introducing some strict rules (<a href="https://doc.rust-lang.org/book/ch04-00-understanding-ownership.html">Ownership</a> and <a href="https://doc.rust-lang.org/book/ch04-02-references-and-borrowing.html">Borrowing</a>) that must be followed.
-This isn't tutorial about lifetime and borrowing, So I just explained the need for a lifetime.</p>
-<link rel="stylesheet" href="./assets/code.css">
-<script type="module" src="./code/frame_decoder.js"></script>
-<div style="break-before: page; page-break-before: always;"></div><h2 id="user-datagram-protocol"><a class="header" href="#user-datagram-protocol">User Datagram Protocol</a></h2>
-<p>TFTP uses UDP to transfer it's data. So basic understanding of UDP is required. Let's look at the UDP header.</p>
-<table><thead><tr><th>Field</th><th>Type</th></tr></thead><tbody>
+</div><div style="break-before: page; page-break-before: always;"></div><h2 id="user-datagram-protocol"><a class="header" href="#user-datagram-protocol">User Datagram Protocol</a></h2>
+<p>TFTP uses UDP to transfer it's data.</p>
+<div class="table-wrapper"><table><thead><tr><th style="text-align: center">Protocol Stack</th></tr></thead><tbody>
+<tr><td style="text-align: center">Local Medium</td></tr>
+<tr><td style="text-align: center">Internet Protocol</td></tr>
+<tr><td style="text-align: center">UDP</td></tr>
+<tr><td style="text-align: center">TFTP Frame</td></tr>
+</tbody></table>
+</div>
+<p>The UDP header consists of the following fields.</p>
+<div class="table-wrapper"><table><thead><tr><th>Field</th><th>Type</th></tr></thead><tbody>
 <tr><td>Source Port</td><td>u16</td></tr>
 <tr><td>Destination Port</td><td>u16</td></tr>
 <tr><td>Length</td><td>u16</td></tr>
 <tr><td>Checksum</td><td>u16</td></tr>
 </tbody></table>
-<p>The main porpuse of UDP is to send messages between two computers.</p>
+</div>
 <ul>
 <li>
-<p><em>Port number</em>: Port numbers as a way to identify a service. 
+<p><em><em>Port number</em></em>: Port numbers as a way to identify a service. 
 Suppose you want to send a mail to your friend, his hotel address is &quot;Main Street, Anytown, USA&quot; and room number is &quot;123&quot;, You can think street address as a <em>IP address</em> and room number as a <em>Port number</em>.</p>
 </li>
 <li>
@@ -273,40 +294,7 @@ However, the actual length of the message is 65,507 bytes* (65,535 − 8 bytes U
 <p><em>Checksum</em>: The checksum field may be used for error-checking of the header and data. This field is optional in IPv4, and mandatory in IPv6.</p>
 </li>
 </ul>
-<p>That's it! And I am hesitanted to call it as a protocol!</p>
-<p>Rust standard library has high level API and excellent <a href="https://doc.rust-lang.org/stable/std/net/struct.UdpSocket.html">documentation</a>, 
-So I don't need to explain how to use UDP.</p>
-<p>In this tutorial, We will use three fundamental functions of UDP socket:</p>
-<ol>
-<li><a href="https://doc.rust-lang.org/stable/std/net/struct.UdpSocket.html#method.bind"><code>bind()</code></a> - create a <a href="https://man7.org/linux/man-pages/man7/socket.7.html">socket</a> and <a href="https://man7.org/linux/man-pages/man2/bind.2.html">bind</a> it to a address.</li>
-<li><a href="https://doc.rust-lang.org/stable/std/net/struct.UdpSocket.html#method.send_to"><code>send_to()</code></a> - Sends data to a specified address.</li>
-<li><a href="https://doc.rust-lang.org/stable/std/net/struct.UdpSocket.html#method.recv_from"><code>recv_from()</code></a> - Receives a single datagram message on the socket. On success, returns the number of bytes read and the origin.</li>
-</ol>
-<div style="break-before: page; page-break-before: always;"></div><h2 id="server-interface"><a class="header" href="#server-interface">Server Interface</a></h2>
-<p>Now we can start to define the interface.</p>
-<div id="server_struct"></div>
-<p>Keyword <code>pub</code> is used to export items from the module. It's also can be used to make an item <a href="https://doc.rust-lang.org/reference/visibility-and-privacy.html">visible</a> to others.</p>
-<div id="server_methods"></div>
-<p><code>listen()</code> function create a <code>Server</code> instance. You may think that <code>listen()</code> is a constructor function. </p>
-<p><code>accept()</code> function accept a new incoming connection. If the request is  <code>RRQ</code> or <code>WRQ</code>, then create a new <code>Context</code> instance and return it.</p>
-<h3 id="context"><a class="header" href="#context">Context</a></h3>
-<div id="ctx_struct"></div>
-<p>Context is a data structure that contains all the information about the current request and knows how to handle it.</p>
-<div id="ctx_methods"></div>
-<link rel="stylesheet" href="./assets/code.css">
-<script type="module" src="./code/interface.js"></script><div style="break-before: page; page-break-before: always;"></div><h1 id="application"><a class="header" href="#application">Application</a></h1>
-<p>Let's illustrate our tftp server with a simple example.</p>
-<div id="example"></div>
-<p>You can run the example with the following command:</p>
-<pre><code class="language-txt">cargo run --example basic
-</code></pre>
-<p>Hopefully you can see the following output:</p>
-<pre><code class="language-yaml">Server Listening at 0.0.0.0:69
-Client Recv: This message must echo from server!
-Server Recv: &quot;Hello, Server!&quot; From: 127.0.0.1:58580
-</code></pre>
-<link rel="stylesheet" href="./assets/code.css">
-<script type="module" src="./code/example.js"></script><div style="break-before: page; page-break-before: always;"></div><h1 id="reference"><a class="header" href="#reference">Reference</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="reference"><a class="header" href="#reference">Reference</a></h1>
 <ul>
 <li><a href="https://en.wikipedia.org/wiki/Packet_loss">Packet loss</a></li>
 <li><a href="https://en.wikipedia.org/wiki/IP_fragmentation">IP fragmentation</a></li>
@@ -325,31 +313,43 @@ Server Recv: &quot;Hello, Server!&quot; From: 127.0.0.1:58580
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
+
+
                         <div style="clear: both"></div>
                     </nav>
                 </div>
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
+
             </nav>
 
         </div>
 
-        <script type="text/javascript">
+
+
+
+        <script>
             window.playground_copyable = true;
         </script>
-        <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
-        <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>
-        <script src="searcher.js" type="text/javascript" charset="utf-8"></script>
-        <script src="clipboard.min.js" type="text/javascript" charset="utf-8"></script>
-        <script src="highlight.js" type="text/javascript" charset="utf-8"></script>
-        <script src="book.js" type="text/javascript" charset="utf-8"></script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
 
         <!-- Custom JS scripts -->
-        <script type="text/javascript">
+
+        <script>
         window.addEventListener('load', function() {
             window.setTimeout(window.print, 100);
         });
         </script>
+
+    </div>
     </body>
 </html>
